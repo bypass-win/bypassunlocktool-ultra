@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { MODELS, type DeviceModel } from "@/lib/pricing";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/register/$type")({
   component: RegisterPage,
@@ -26,9 +27,33 @@ function RegisterPage() {
   const [method, setMethod] = useState<"paypal" | "card">("paypal");
   const [card, setCard] = useState({ number: "", name: "", exp: "", cvc: "" });
   const [paid, setPaid] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const model: DeviceModel | null = MODELS.find((m) => m.id === modelId) ?? null;
   const canContinue = serialConfirmed && serial.trim().length >= 10 && email.includes("@") && !!model;
+
+  const submitRegistration = async (paymentMethod: string) => {
+    if (!model) return;
+    setSubmitting(true);
+    setError("");
+    const { error: insertError } = await supabase.from("registrations").insert({
+      serial: serial.trim().toUpperCase(),
+      email: email.trim(),
+      model_id: model.id,
+      model_name: model.name,
+      unlock_type: isPasscode ? "passcode" : "icloud",
+      amount: model.price,
+      payment_method: paymentMethod,
+      status: "processing",
+    });
+    setSubmitting(false);
+    if (insertError) {
+      setError(insertError.message);
+      return;
+    }
+    setPaid(true);
+  };
 
   return (
     <main className="max-w-2xl mx-auto px-6 py-10">
@@ -61,9 +86,6 @@ function RegisterPage() {
               placeholder="Paste serial from the Bypass Unlock tool"
               className="w-full rounded-md bg-input border border-border px-3 py-2 font-mono uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-ring"
             />
-            <p className="mt-2 text-xs text-muted-foreground">
-              Type or paste your serial, then click Confirm. We do not auto-detect — please pick your model below.
-            </p>
             <button
               type="button"
               onClick={() => setSerialConfirmed(serial.trim().length >= 10)}
@@ -136,6 +158,8 @@ function RegisterPage() {
                 </button>
               </div>
 
+              {error && <p className="text-sm text-destructive">{error}</p>}
+
               {method === "paypal" && (
                 <div className="text-sm">
                   <p className="text-muted-foreground mb-3">
@@ -145,7 +169,7 @@ function RegisterPage() {
                     href={`https://paypal.me/${PAYPAL_HANDLE}/${model.price}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => setTimeout(() => setPaid(true), 800)}
+                    onClick={() => setTimeout(() => submitRegistration("paypal"), 800)}
                     className="inline-block rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground"
                   >
                     Pay ${model.price} with PayPal
@@ -155,7 +179,7 @@ function RegisterPage() {
 
               {method === "card" && (
                 <form
-                  onSubmit={(e) => { e.preventDefault(); setPaid(true); }}
+                  onSubmit={(e) => { e.preventDefault(); submitRegistration("card"); }}
                   className="space-y-3 text-sm"
                 >
                   <input required value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} placeholder="Cardholder name" className="w-full rounded-md bg-input border border-border px-3 py-2" />
@@ -164,8 +188,8 @@ function RegisterPage() {
                     <input required value={card.exp} onChange={(e) => setCard({ ...card, exp: e.target.value })} placeholder="MM/YY" maxLength={5} className="rounded-md bg-input border border-border px-3 py-2 font-mono" />
                     <input required value={card.cvc} onChange={(e) => setCard({ ...card, cvc: e.target.value })} placeholder="CVC" maxLength={4} className="rounded-md bg-input border border-border px-3 py-2 font-mono" />
                   </div>
-                  <button className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground">
-                    Pay ${model.price} &amp; Register
+                  <button disabled={submitting} className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground disabled:opacity-50">
+                    {submitting ? "Submitting…" : `Pay $${model.price} & Register`}
                   </button>
                 </form>
               )}
@@ -181,9 +205,10 @@ function RegisterPage() {
                 will detect your device automatically — connect via USB and complete the bypass in 1 click.
               </p>
               <p className="text-xs text-muted-foreground">A confirmation will be sent to {email}.</p>
-              <Link to="/" className="inline-block mt-4 rounded-md border border-border px-4 py-2 text-sm hover:bg-card">
-                Back to home
-              </Link>
+              <div className="flex gap-2 mt-4">
+                <Link to="/status" className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Check status</Link>
+                <Link to="/" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-card">Home</Link>
+              </div>
             </div>
           )}
         </div>
