@@ -1,6 +1,9 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import appCss from "../styles.css?url";
 import logo from "@/assets/logo.jpg";
+import { TelegramPopup } from "@/components/TelegramPopup";
+import { useAuth } from "@/hooks/useAuth";
+import { useSettings } from "@/lib/settings";
 
 function NotFoundComponent() {
   return (
@@ -24,7 +27,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Bypass Unlock — iCloud Activation & Passcode Bypass Tool" },
-      { name: "description", content: "Bypass Unlock removes iCloud Activation Lock and screen passcode on iPhone & iPad (iOS 12 → iOS 26.3.1, A12+). Register your device serial and unlock in one click." },
+      { name: "description", content: "Bypass Unlock removes iCloud Activation Lock and screen passcode on iPhone & iPad (iOS 18.7.2 → iOS 26.3.1, A12+). Register your serial and unlock in one click." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -48,27 +51,58 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function Header() {
+  const { user, isAdmin, signOut } = useAuth();
+  const { settings } = useSettings();
   return (
     <header className="border-b border-border">
-      <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
+      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+        <Link to="/" className="flex items-center gap-2 shrink-0">
           <img src={logo} alt="Bypass Unlock" className="h-8 w-8 rounded object-cover" />
-          <span className="font-semibold">Bypass Unlock</span>
+          <span className="font-semibold hidden sm:inline">Bypass Unlock</span>
         </Link>
-        <Link to="/register/$type" params={{ type: "icloud" }} className="text-sm rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground">
-          Register
-        </Link>
+        <nav className="flex items-center gap-2 text-sm">
+          <a
+            href={settings.download_url_windows}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md px-3 py-1.5 font-medium text-white"
+            style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.18 0.05 260))" }}
+          >
+            ⬇ Download
+          </a>
+          <Link to="/status" className="rounded-md border border-border px-3 py-1.5 hover:bg-card hidden sm:inline-block">Status</Link>
+          <Link to="/register/$type" params={{ type: "icloud" }} className="rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground">Register</Link>
+          {isAdmin && <Link to="/admin" className="rounded-md border border-primary px-3 py-1.5 text-primary hidden sm:inline-block">Admin</Link>}
+          {user ? (
+            <button onClick={() => signOut()} className="text-muted-foreground hover:text-foreground hidden sm:inline">Sign out</button>
+          ) : (
+            <Link to="/auth" className="text-muted-foreground hover:text-foreground hidden sm:inline">Sign in</Link>
+          )}
+        </nav>
       </div>
     </header>
   );
 }
 
 function Footer() {
+  const { settings } = useSettings();
   return (
     <footer className="border-t border-border mt-16">
-      <div className="max-w-3xl mx-auto px-6 py-6 text-xs text-muted-foreground flex flex-col sm:flex-row justify-between gap-2">
-        <p>© {new Date().getFullYear()} Bypass Unlock</p>
-        <p>support@bypassunlock.com · Telegram: @bypassunlock</p>
+      <div className="max-w-5xl mx-auto px-6 py-8 text-sm text-muted-foreground grid sm:grid-cols-3 gap-4">
+        <div>
+          <p className="font-semibold text-foreground">Bypass Unlock</p>
+          <p className="mt-1 text-xs">© {new Date().getFullYear()} {settings.website_url}</p>
+        </div>
+        <div>
+          <p className="font-semibold text-foreground">Contact</p>
+          <a href={`mailto:${settings.contact_email}`} className="block hover:text-foreground text-xs mt-1">{settings.contact_email}</a>
+          <a href={settings.telegram_url} target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">Telegram: @BYPASS_UNLOCK</a>
+        </div>
+        <div>
+          <p className="font-semibold text-foreground">Links</p>
+          <Link to="/status" className="block hover:text-foreground text-xs mt-1">Check registration status</Link>
+          <Link to="/auth" className="block hover:text-foreground text-xs">Sign in</Link>
+        </div>
       </div>
     </footer>
   );
@@ -80,6 +114,7 @@ function RootComponent() {
       <Header />
       <Outlet />
       <Footer />
+      <TelegramPopup />
     </>
   );
 }
