@@ -48,7 +48,7 @@ function AdminPage() {
   useEffect(() => { if (isAdmin) { loadRegs(); loadSettings(); } }, [isAdmin]);
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("registrations").update({ status }).eq("id", id);
+    await supabase.from("registrations").update({ status: status as "pending" | "processing" | "completed" | "failed" }).eq("id", id);
     loadRegs();
   };
   const deleteReg = async (id: string) => {
