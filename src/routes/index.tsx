@@ -66,7 +66,7 @@ function Home() {
         </div>
 
         <div className="mt-10 grid md:grid-cols-2 gap-6">
-          <article className="bg-brand-soft rounded-lg p-6">
+          <article className="rounded-lg p-6" style={{ background: "linear-gradient(135deg, oklch(0.35 0.1 220), oklch(0.4 0.12 180))" }}>
             <div className="flex justify-center">
               <img
                 src={activationLock}
@@ -101,13 +101,14 @@ function Home() {
             <Link
               to="/register/$type"
               params={{ type: "icloud" }}
-              className="mt-6 block w-full text-center rounded-md bg-brand px-4 py-2.5 font-semibold text-brand-foreground hover:opacity-95"
+              className="mt-6 block w-full text-center rounded-md px-4 py-2.5 font-semibold text-white hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, oklch(0.35 0.12 250), oklch(0.18 0.05 260))" }}
             >
               Register for iCloud Bypass
             </Link>
           </article>
 
-          <article className="bg-brand-soft rounded-lg p-6">
+          <article className="rounded-lg p-6" style={{ background: "linear-gradient(135deg, oklch(0.35 0.1 220), oklch(0.4 0.12 180))" }}>
             <div className="flex justify-center">
               <img
                 src={passcodeLock}
@@ -142,7 +143,8 @@ function Home() {
             <Link
               to="/register/$type"
               params={{ type: "passcode" }}
-              className="mt-6 block w-full text-center rounded-md bg-brand px-4 py-2.5 font-semibold text-brand-foreground hover:opacity-95"
+              className="mt-6 block w-full text-center rounded-md px-4 py-2.5 font-semibold text-white hover:opacity-90"
+              style={{ background: "linear-gradient(135deg, oklch(0.35 0.12 250), oklch(0.18 0.05 260))" }}
             >
               Register for Passcode Unlock
             </Link>
