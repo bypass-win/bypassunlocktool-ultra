@@ -26,7 +26,8 @@ function Home() {
               <Link
                 to="/register/$type"
                 params={{ type: "icloud" }}
-                className="inline-flex items-center rounded-md bg-white text-foreground px-5 py-2.5 font-semibold hover:bg-white/90"
+                className="inline-flex items-center rounded-md px-5 py-2.5 font-semibold text-white hover:opacity-90"
+                style={{ background: "linear-gradient(135deg, oklch(0.35 0.12 250), oklch(0.18 0.05 260))" }}
               >
                 Register your device
               </Link>
