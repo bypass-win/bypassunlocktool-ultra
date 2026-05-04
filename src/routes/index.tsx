@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import heroDevices from "@/assets/hero-devices.png";
+import heroIpad from "@/assets/hero-ipad.png";
+import heroIphone from "@/assets/iphone-locked.png";
 import activationLock from "@/assets/activation-lock.png";
 import passcodeLock from "@/assets/passcode-lock.png";
 
@@ -9,14 +10,14 @@ function Home() {
   return (
     <main>
       {/* Hero */}
-      <section className="bg-brand text-brand-foreground">
+      <section style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.6 0.15 165))" }} className="text-white">
         <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-10 items-center">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">
               iCloud Unlock Software
             </h1>
             <h2 className="mt-3 text-2xl font-semibold opacity-95">Bypass Unlock Tools</h2>
-            <p className="mt-5 text-base/7 opacity-90 max-w-lg">
+            <p className="mt-5 text-base/7 opacity-95 max-w-lg">
               The Bypass Unlock team provides a straightforward solution to bypass the iCloud
               Activation Lock screen and screen passcode on iPhone and iPad — supporting iOS
               18.7.2 to iOS 26.3.1 (A12 chip and above) in just one click.
@@ -25,25 +26,28 @@ function Home() {
               <Link
                 to="/register/$type"
                 params={{ type: "icloud" }}
-                className="inline-flex items-center rounded-md bg-white text-brand px-5 py-2.5 font-semibold hover:bg-white/90"
+                className="inline-flex items-center rounded-md bg-white text-foreground px-5 py-2.5 font-semibold hover:bg-white/90"
               >
                 Register your device
               </Link>
               <a
                 href="#tools"
-                className="inline-flex items-center rounded-md border border-white/40 px-5 py-2.5 font-semibold hover:bg-white/10"
+                className="inline-flex items-center rounded-md border border-white/50 px-5 py-2.5 font-semibold text-white hover:bg-white/10"
               >
                 See tools
               </a>
             </div>
           </div>
-          <div>
+          <div className="flex items-end justify-center gap-3">
             <img
-              src={heroDevices}
-              alt="iPad and iPhone showing iCloud Activation Lock screen"
-              width={1280}
-              height={896}
-              className="w-full h-auto"
+              src={heroIphone}
+              alt="iPhone Locked to Owner screen"
+              className="h-64 md:h-80 w-auto drop-shadow-2xl"
+            />
+            <img
+              src={heroIpad}
+              alt="iPad showing iCloud Activation Lock screen"
+              className="h-56 md:h-72 w-auto drop-shadow-2xl"
             />
           </div>
         </div>
