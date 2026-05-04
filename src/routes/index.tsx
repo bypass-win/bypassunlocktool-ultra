@@ -1,55 +1,163 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import heroDevices from "@/assets/hero-devices.png";
+import activationLock from "@/assets/activation-lock.png";
+import passcodeLock from "@/assets/passcode-lock.png";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 function Home() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-3">Bypass Unlock</h1>
-      <p className="text-muted-foreground mb-8">
-        A simple tool to bypass iCloud Activation Lock and screen passcode on iPhone &amp; iPad
-        (A12 and above, iOS 18.7.2 to iOS 26.3.1). Register your device serial number below to
-        get started.
-      </p>
+    <main>
+      {/* Hero */}
+      <section className="bg-brand text-brand-foreground">
+        <div className="max-w-6xl mx-auto px-6 py-14 grid md:grid-cols-2 gap-10 items-center">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+              iCloud Unlock Software
+            </h1>
+            <h2 className="mt-3 text-2xl font-semibold opacity-95">Bypass Unlock Tools</h2>
+            <p className="mt-5 text-base/7 opacity-90 max-w-lg">
+              The Bypass Unlock team provides a straightforward solution to bypass the iCloud
+              Activation Lock screen and screen passcode on iPhone and iPad — supporting iOS
+              18.7.2 to iOS 26.3.1 (A12 chip and above) in just one click.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link
+                to="/register/$type"
+                params={{ type: "icloud" }}
+                className="inline-flex items-center rounded-md bg-white text-brand px-5 py-2.5 font-semibold hover:bg-white/90"
+              >
+                Register your device
+              </Link>
+              <a
+                href="#tools"
+                className="inline-flex items-center rounded-md border border-white/40 px-5 py-2.5 font-semibold hover:bg-white/10"
+              >
+                See tools
+              </a>
+            </div>
+          </div>
+          <div>
+            <img
+              src={heroDevices}
+              alt="iPad and iPhone showing iCloud Activation Lock screen"
+              width={1280}
+              height={896}
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+      </section>
 
-      <div className="border border-border rounded-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-2">Before you register</h2>
-        <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-          <li>Download and open the Bypass Unlock tool on your computer.</li>
-          <li>Connect your iPhone or iPad with a USB cable.</li>
-          <li>Make sure the tool shows your device as <span className="text-foreground font-medium">Supported</span>.</li>
-          <li>Copy the device <span className="text-foreground font-medium">Serial Number</span> shown by the tool.</li>
-          <li>Choose your registration type below and paste your serial.</li>
-        </ol>
-      </div>
+      {/* Tools intro */}
+      <section id="tools" className="max-w-6xl mx-auto px-6 py-14">
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-brand">Unlock Tools for iPhone &amp; iPad</h2>
+          <p className="mt-3 text-muted-foreground">
+            The Bypass Unlock iPhone and iPad tools are the best way to solve the most common
+            issues iOS users may experience. If you have an iCloud-locked or passcode-locked
+            device, our software is ready to remove the lock from your device in a single click.
+          </p>
+        </div>
 
-      <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        <Link
-          to="/register/$type"
-          params={{ type: "icloud" }}
-          className="border border-border rounded-md p-5 hover:bg-card transition"
-        >
-          <h3 className="font-semibold mb-1">iCloud Activation Bypass</h3>
-          <p className="text-sm text-muted-foreground">Remove the iCloud Activation Lock screen.</p>
-        </Link>
-        <Link
-          to="/register/$type"
-          params={{ type: "passcode" }}
-          className="border border-border rounded-md p-5 hover:bg-card transition"
-        >
-          <h3 className="font-semibold mb-1">Screen Passcode Unlock</h3>
-          <p className="text-sm text-muted-foreground">Bypass the screen passcode on your device.</p>
-        </Link>
-      </div>
+        <div className="mt-10 grid md:grid-cols-2 gap-6">
+          <article className="bg-brand-soft rounded-lg p-6">
+            <div className="flex justify-center">
+              <img
+                src={activationLock}
+                alt="iPhone iCloud Activation Lock"
+                width={768}
+                height={1024}
+                loading="lazy"
+                className="h-64 w-auto"
+              />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-brand">
+              Bypass iCloud Activation Lock Screen Tool →
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The Bypass Unlock software will bypass the iCloud Activation Lock screen on iPhone
+              and iPad running iOS 18.7.2 up to iOS 26.3.1 in 1 click.
+            </p>
+            <div className="mt-5 text-sm">
+              <p className="font-semibold">Supported iOS Firmwares:</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                <li>✓ from iOS 18.7.2 → up to iOS 26.3.1</li>
+              </ul>
+              <p className="mt-3 font-semibold">Supported iPhone Models:</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                <li>✓ A12+: from XR, XS, XS Max → up to iPhone 17 Pro Max &amp; iPhone Air</li>
+              </ul>
+              <p className="mt-3 font-semibold">Supported iPad Models:</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                <li>✓ A12+: any iPad, iPad Pro, Air &amp; Mini from 2019 onward → iPad M3</li>
+              </ul>
+            </div>
+            <Link
+              to="/register/$type"
+              params={{ type: "icloud" }}
+              className="mt-6 block w-full text-center rounded-md bg-brand px-4 py-2.5 font-semibold text-brand-foreground hover:opacity-95"
+            >
+              Register for iCloud Bypass
+            </Link>
+          </article>
 
-      <div className="border border-border rounded-md p-6">
-        <h2 className="text-xl font-semibold mb-2">Supported devices</h2>
-        <ul className="text-sm text-muted-foreground space-y-1">
-          <li>iPhone XR / XS / XS Max → iPhone 17 Pro Max, iPhone Air</li>
-          <li>iPad 8th generation → iPad M3</li>
-          <li>iOS 18.7.2 → iOS 26.3.1 (A12 chip and above)</li>
-        </ul>
-      </div>
+          <article className="bg-brand-soft rounded-lg p-6">
+            <div className="flex justify-center">
+              <img
+                src={passcodeLock}
+                alt="iPhone Passcode Lock"
+                width={768}
+                height={1024}
+                loading="lazy"
+                className="h-64 w-auto"
+              />
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-brand">
+              Screen Passcode Unlock Tool →
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              The Bypass Unlock software is ready to remove the screen passcode from any
+              supported iPhone or iPad without losing access to the device.
+            </p>
+            <div className="mt-5 text-sm">
+              <p className="font-semibold">Supported iOS Firmwares:</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                <li>✓ from iOS 18.7.2 → up to iOS 26.3.1</li>
+              </ul>
+              <p className="mt-3 font-semibold">Supported iPhone Models:</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                <li>✓ A12+: from XR, XS, XS Max → up to iPhone 17 Pro Max</li>
+              </ul>
+              <p className="mt-3 font-semibold">Supported iPad Models:</p>
+              <ul className="mt-1 space-y-1 text-muted-foreground">
+                <li>✓ A12+: any iPad model from 2019 onward</li>
+              </ul>
+            </div>
+            <Link
+              to="/register/$type"
+              params={{ type: "passcode" }}
+              className="mt-6 block w-full text-center rounded-md bg-brand px-4 py-2.5 font-semibold text-brand-foreground hover:opacity-95"
+            >
+              Register for Passcode Unlock
+            </Link>
+          </article>
+        </div>
+      </section>
+
+      {/* Before you register */}
+      <section className="max-w-4xl mx-auto px-6 pb-16">
+        <div className="border border-border rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-brand">Before you register</h2>
+          <ol className="mt-3 list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+            <li>Download and open the Bypass Unlock tool on your computer.</li>
+            <li>Connect your iPhone or iPad with a USB cable.</li>
+            <li>Make sure the tool shows your device as <span className="text-foreground font-medium">Supported</span>.</li>
+            <li>Copy the device <span className="text-foreground font-medium">Serial Number</span> shown by the tool.</li>
+            <li>Choose your registration type and paste your serial.</li>
+          </ol>
+        </div>
+      </section>
     </main>
   );
 }
