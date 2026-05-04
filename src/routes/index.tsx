@@ -66,7 +66,7 @@ function Home() {
         </div>
 
         <div className="mt-10 grid md:grid-cols-2 gap-6">
-          <article className="rounded-lg p-6" style={{ background: "linear-gradient(135deg, oklch(0.35 0.1 220), oklch(0.4 0.12 180))" }}>
+          <article className="rounded-lg p-6" style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.6 0.15 165))" }}>
             <div className="flex justify-center">
               <img
                 src={activationLock}
@@ -108,7 +108,7 @@ function Home() {
             </Link>
           </article>
 
-          <article className="rounded-lg p-6" style={{ background: "linear-gradient(135deg, oklch(0.35 0.1 220), oklch(0.4 0.12 180))" }}>
+          <article className="rounded-lg p-6" style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.6 0.15 165))" }}>
             <div className="flex justify-center">
               <img
                 src={passcodeLock}
