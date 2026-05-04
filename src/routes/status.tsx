@@ -1,0 +1,99 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+export const Route = createFileRoute("/status")({
+  component: StatusPage,
+  head: () => ({ meta: [{ title: "Registration Status — Bypass Unlock" }] }),
+});
+
+type Reg = { serial: string; status: string; created_at: string; model_name: string };
+
+function StatusPage() {
+  const [serial, setSerial] = useState("");
+  const [result, setResult] = useState<Reg | "notfound" | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const check = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    const { data } = await supabase
+      .from("registrations")
+      .select("serial,status,created_at,model_name")
+      .eq("serial", serial.trim().toUpperCase())
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setResult(data ? (data as Reg) : "notfound");
+    setLoading(false);
+  };
+
+  return (
+    <main className="max-w-2xl mx-auto px-6 py-10">
+      <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Back to home</Link>
+      <h1 className="text-2xl font-bold mt-4 mb-2">Check Registration Status</h1>
+      <p className="text-sm text-muted-foreground mb-6">Enter the serial number you registered to see its status.</p>
+
+      <form onSubmit={check} className="border border-border rounded-md p-6 space-y-4">
+        <input
+          value={serial}
+          onChange={(e) => setSerial(e.target.value.toUpperCase())}
+          placeholder="Device serial number"
+          className="w-full rounded-md bg-input border border-border px-3 py-2 font-mono"
+          required
+          minLength={8}
+        />
+        <button disabled={loading} className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground disabled:opacity-50">
+          {loading ? "Checking…" : "Check status"}
+        </button>
+      </form>
+
+      {result === "notfound" && (
+        <div className="mt-6 border border-destructive/40 bg-destructive/5 rounded-md p-5">
+          <h2 className="font-semibold text-destructive">Sorry — serial not registered</h2>
+          <p className="text-sm text-muted-foreground mt-2">
+            Your serial number is not registered in our database. If you've already paid,
+            please contact support with your payment receipt.
+          </p>
+        </div>
+      )}
+
+      {result && result !== "notfound" && (
+        <div className="mt-6 border border-border rounded-md p-5">
+          <p className="text-sm text-muted-foreground">Serial</p>
+          <p className="font-mono">{result.serial}</p>
+          <p className="text-sm text-muted-foreground mt-3">Device</p>
+          <p>{result.model_name}</p>
+          <div className="mt-4">
+            {result.status === "completed" && (
+              <div className="border border-success/40 bg-success/5 rounded p-4">
+                <h3 className="font-semibold text-success">🎉 Congratulations!</h3>
+                <p className="text-sm mt-2">
+                  Your serial number is registered in our server. You can now bypass your phone using the Bypass Unlock tool.
+                </p>
+              </div>
+            )}
+            {(result.status === "processing" || result.status === "pending") && (
+              <div className="border border-warning/40 bg-warning/5 rounded p-4">
+                <h3 className="font-semibold text-warning">⏳ Processing</h3>
+                <p className="text-sm mt-2">
+                  Your serial number is being processed for registration. This may take 15–30 minutes.
+                  Please come back later and check again.
+                </p>
+              </div>
+            )}
+            {result.status === "failed" && (
+              <div className="border border-destructive/40 bg-destructive/5 rounded p-4">
+                <h3 className="font-semibold text-destructive">Registration failed</h3>
+                <p className="text-sm mt-2">
+                  Sorry — your serial number could not be registered. Please contact support.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
