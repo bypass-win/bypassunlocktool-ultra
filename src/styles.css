@@ -60,9 +60,9 @@
   --border: oklch(0.28 0.01 260);
   --input: oklch(0.2 0.01 260);
   --ring: oklch(0.65 0.18 150);
-  --brand: oklch(0.6 0.18 245);
+  --brand: oklch(0.4 0.1 150);
   --brand-foreground: oklch(0.98 0 0);
-  --brand-soft: oklch(0.2 0.05 245);
+  --brand-soft: oklch(0.18 0.04 150);
 }
 
 @layer base {
