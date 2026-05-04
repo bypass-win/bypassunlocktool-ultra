@@ -49,20 +49,14 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function Header() {
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border/50">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 group">
-          <img src={logo} alt="Bypass Unlock" className="h-10 w-10 rounded-md object-cover ring-1 ring-primary/40 group-hover:ring-primary transition" />
-          <span className="font-bold text-lg tracking-tight">Bypass <span className="gradient-text">Unlock</span></span>
+    <header className="border-b border-border">
+      <div className="max-w-3xl mx-auto px-6 h-14 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="Bypass Unlock" className="h-8 w-8 rounded object-cover" />
+          <span className="font-semibold">Bypass Unlock</span>
         </Link>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="/#features" className="hover:text-foreground transition">Features</a>
-          <a href="/#supported" className="hover:text-foreground transition">Supported</a>
-          <a href="/#pricing" className="hover:text-foreground transition">Pricing</a>
-          <a href="/#process" className="hover:text-foreground transition">Process</a>
-        </nav>
-        <Link to="/register/$type" params={{ type: "icloud" }} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90">
-          Register Device
+        <Link to="/register/$type" params={{ type: "icloud" }} className="text-sm rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground">
+          Register
         </Link>
       </div>
     </header>
@@ -71,10 +65,10 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="border-t border-border/50 mt-24">
-      <div className="max-w-7xl mx-auto px-6 py-10 text-sm text-muted-foreground flex flex-col md:flex-row justify-between gap-4">
-        <p>© {new Date().getFullYear()} Bypass Unlock. All rights reserved.</p>
-        <p>Contact: support@bypassunlock.com · Telegram: @bypassunlock</p>
+    <footer className="border-t border-border mt-16">
+      <div className="max-w-3xl mx-auto px-6 py-6 text-xs text-muted-foreground flex flex-col sm:flex-row justify-between gap-2">
+        <p>© {new Date().getFullYear()} Bypass Unlock</p>
+        <p>support@bypassunlock.com · Telegram: @bypassunlock</p>
       </div>
     </footer>
   );
