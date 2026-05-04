@@ -1,8 +1,5 @@
 @import "tailwindcss" source(none);
 @source "../src";
-@import "tw-animate-css";
-
-@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -32,41 +29,44 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --font-display: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 :root {
   --radius: 0.5rem;
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0.16 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.16 0 0);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.2 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.18 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.25 0 0);
-  --accent-foreground: oklch(1 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.18 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 260);
+  --primary: oklch(0.42 0.13 245);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.01 240);
+  --secondary-foreground: oklch(0.25 0.05 250);
+  --muted: oklch(0.97 0.01 240);
+  --muted-foreground: oklch(0.45 0.02 250);
+  --accent: oklch(0.95 0.03 240);
+  --accent-foreground: oklch(0.25 0.05 250);
   --destructive: oklch(0.6 0.22 27);
   --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.7 0.18 155);
-  --success-foreground: oklch(0 0 0);
-  --warning: oklch(0.78 0.16 70);
-  --warning-foreground: oklch(0 0 0);
-  --border: oklch(0.25 0 0);
-  --input: oklch(0.14 0 0);
-  --ring: oklch(0.5 0 0);
+  --success: oklch(0.6 0.15 155);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.7 0.16 70);
+  --warning-foreground: oklch(0.18 0.02 260);
+  --border: oklch(0.9 0.01 240);
+  --input: oklch(1 0 0);
+  --ring: oklch(0.42 0.13 245);
+  --brand: oklch(0.42 0.13 245);
+  --brand-foreground: oklch(1 0 0);
+  --brand-soft: oklch(0.95 0.04 240);
 }
-
-.dark { color-scheme: dark; }
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { color-scheme: dark; }
   body {
     background: var(--color-background);
     color: var(--color-foreground);
