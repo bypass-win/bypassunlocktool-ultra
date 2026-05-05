@@ -89,20 +89,42 @@ function Footer() {
   const { settings } = useSettings();
   return (
     <footer className="border-t border-border mt-16">
-      <div className="max-w-5xl mx-auto px-6 py-8 text-sm text-muted-foreground grid sm:grid-cols-3 gap-4">
-        <div>
-          <p className="font-semibold text-foreground">Bypass Unlock</p>
-          <p className="mt-1 text-xs">© {new Date().getFullYear()} {settings.website_url}</p>
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          <a
+            href={settings.download_url_windows}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md px-4 py-2 text-sm font-medium text-white"
+            style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.18 0.05 260))" }}
+          >
+            ⬇ Download
+          </a>
+          <Link to="/status" className="rounded-md border border-border px-4 py-2 text-sm hover:bg-card">Status</Link>
+          <a
+            href="https://www.trustpilot.com/review/bypassunlock.online"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-border px-4 py-2 text-sm hover:bg-card inline-flex items-center gap-1"
+          >
+            <span className="text-yellow-400">★</span> Rate us
+          </a>
         </div>
-        <div>
-          <p className="font-semibold text-foreground">Contact</p>
-          <a href={`mailto:${settings.contact_email}`} className="block hover:text-foreground text-xs mt-1">{settings.contact_email}</a>
-          <a href={settings.telegram_url} target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">Telegram: @BYPASS_UNLOCK</a>
-        </div>
-        <div>
-          <p className="font-semibold text-foreground">Links</p>
-          <Link to="/status" className="block hover:text-foreground text-xs mt-1">Check registration status</Link>
-          <a href="https://www.trustpilot.com/review/bypassunlock.online" target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">★ Rate us on Trustpilot</a>
+        <div className="text-sm text-muted-foreground grid sm:grid-cols-3 gap-4">
+          <div>
+            <p className="font-semibold text-foreground">Bypass Unlock</p>
+            <p className="mt-1 text-xs">© {new Date().getFullYear()} {settings.website_url}</p>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">Contact</p>
+            <a href={`mailto:${settings.contact_email}`} className="block hover:text-foreground text-xs mt-1">{settings.contact_email}</a>
+            <a href={settings.telegram_url} target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">Telegram: @BYPASS_UNLOCK</a>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground">Links</p>
+            <Link to="/status" className="block hover:text-foreground text-xs mt-1">Check registration status</Link>
+            <a href="https://www.trustpilot.com/review/bypassunlock.online" target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">★ Rate us on Trustpilot</a>
+          </div>
         </div>
       </div>
     </footer>

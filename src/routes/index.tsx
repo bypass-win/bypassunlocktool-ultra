@@ -77,24 +77,24 @@ function Home() {
                 className="h-64 w-auto"
               />
             </div>
-            <h3 className="mt-4 text-xl font-semibold text-brand">
+            <h3 className="mt-4 text-xl font-semibold text-white">
               Bypass iCloud Activation Lock Screen Tool →
             </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-white/90">
               The Bypass Unlock software will bypass the iCloud Activation Lock screen on iPhone
               and iPad running iOS 18.7.2 up to iOS 26.3.1 in 1 click.
             </p>
-            <div className="mt-5 text-sm">
+            <div className="mt-5 text-sm text-white">
               <p className="font-semibold">Supported iOS Firmwares:</p>
-              <ul className="mt-1 space-y-1 text-muted-foreground">
+              <ul className="mt-1 space-y-1 text-white/90">
                 <li>✓ from iOS 18.7.2 → up to iOS 26.3.1</li>
               </ul>
               <p className="mt-3 font-semibold">Supported iPhone Models:</p>
-              <ul className="mt-1 space-y-1 text-muted-foreground">
+              <ul className="mt-1 space-y-1 text-white/90">
                 <li>✓ A12+: from XR, XS, XS Max → up to iPhone 17 Pro Max &amp; iPhone Air</li>
               </ul>
               <p className="mt-3 font-semibold">Supported iPad Models:</p>
-              <ul className="mt-1 space-y-1 text-muted-foreground">
+              <ul className="mt-1 space-y-1 text-white/90">
                 <li>✓ A12+: any iPad, iPad Pro, Air &amp; Mini from 2019 onward → iPad M3</li>
               </ul>
             </div>
@@ -119,24 +119,24 @@ function Home() {
                 className="h-64 w-auto"
               />
             </div>
-            <h3 className="mt-4 text-xl font-semibold text-brand">
+            <h3 className="mt-4 text-xl font-semibold text-white">
               Screen Passcode Unlock Tool →
             </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm text-white/90">
               The Bypass Unlock software is ready to remove the screen passcode from any
               supported iPhone or iPad without losing access to the device.
             </p>
-            <div className="mt-5 text-sm">
+            <div className="mt-5 text-sm text-white">
               <p className="font-semibold">Supported iOS Firmwares:</p>
-              <ul className="mt-1 space-y-1 text-muted-foreground">
+              <ul className="mt-1 space-y-1 text-white/90">
                 <li>✓ from iOS 18.7.2 → up to iOS 26.3.1</li>
               </ul>
               <p className="mt-3 font-semibold">Supported iPhone Models:</p>
-              <ul className="mt-1 space-y-1 text-muted-foreground">
+              <ul className="mt-1 space-y-1 text-white/90">
                 <li>✓ A12+: from XR, XS, XS Max → up to iPhone 17 Pro Max</li>
               </ul>
               <p className="mt-3 font-semibold">Supported iPad Models:</p>
-              <ul className="mt-1 space-y-1 text-muted-foreground">
+              <ul className="mt-1 space-y-1 text-white/90">
                 <li>✓ A12+: any iPad model from 2019 onward</li>
               </ul>
             </div>
