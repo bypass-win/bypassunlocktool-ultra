@@ -54,8 +54,11 @@ export const createPayPalOrder = createServerFn({ method: "POST" })
         ],
       }),
     });
-    const json = (await res.json()) as { id?: string; message?: string };
-    if (!res.ok || !json.id) throw new Error(json.message || "Failed to create order");
+    const json = (await res.json()) as { id?: string; message?: string; details?: any };
+    if (!res.ok || !json.id) {
+      console.error("PayPal createOrder failed:", res.status, JSON.stringify(json));
+      throw new Error(json.message ? `${json.message}: ${JSON.stringify(json.details ?? {})}` : "Failed to create order");
+    }
     return { orderId: json.id };
   });
 
