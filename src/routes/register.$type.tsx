@@ -201,6 +201,9 @@ function RegisterPage() {
                       onError={(e: any) => setError(e?.message || "PayPal error")}
                     />
                   </PayPalScriptProvider>
+                  ) : (
+                    <p className="text-muted-foreground">Loading PayPal…</p>
+                  )}
                 </div>
               )}
 
