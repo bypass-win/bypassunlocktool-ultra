@@ -35,7 +35,7 @@ export function TelegramPopup() {
           ✕
         </button>
         <div className="text-center">
-          <div className="text-4xl mb-3">📣</div>
+          <img src={telegramLogo} alt="Telegram" className="mx-auto mb-3 h-12 w-12 object-contain" />
           <h2 className="text-lg font-bold">Join our Telegram channel</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Get tool updates, supported iOS versions, and bypass news first.
