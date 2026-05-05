@@ -2,7 +2,6 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import logo from "@/assets/logo.jpg";
 import { TelegramPopup } from "@/components/TelegramPopup";
-import { useAuth } from "@/hooks/useAuth";
 import { useSettings } from "@/lib/settings";
 
 function NotFoundComponent() {
@@ -51,7 +50,6 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function Header() {
-  const { user, isAdmin, signOut } = useAuth();
   const { settings } = useSettings();
   return (
     <header className="border-b border-border">
@@ -71,13 +69,16 @@ function Header() {
             ⬇ Download
           </a>
           <Link to="/status" className="rounded-md border border-border px-3 py-1.5 hover:bg-card hidden sm:inline-block">Status</Link>
+          <a
+            href="https://www.trustpilot.com/review/bypassunlock.online"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-border px-3 py-1.5 hover:bg-card hidden sm:inline-flex items-center gap-1"
+            title="Rate us on Trustpilot"
+          >
+            <span className="text-yellow-400">★</span> Rate us
+          </a>
           <Link to="/register/$type" params={{ type: "icloud" }} className="rounded-md bg-primary px-3 py-1.5 font-medium text-primary-foreground">Register</Link>
-          {isAdmin && <Link to="/admin" className="rounded-md border border-primary px-3 py-1.5 text-primary hidden sm:inline-block">Admin</Link>}
-          {user ? (
-            <button onClick={() => signOut()} className="text-muted-foreground hover:text-foreground hidden sm:inline">Sign out</button>
-          ) : (
-            <Link to="/auth" className="text-muted-foreground hover:text-foreground hidden sm:inline">Sign in</Link>
-          )}
         </nav>
       </div>
     </header>
@@ -101,7 +102,7 @@ function Footer() {
         <div>
           <p className="font-semibold text-foreground">Links</p>
           <Link to="/status" className="block hover:text-foreground text-xs mt-1">Check registration status</Link>
-          <Link to="/auth" className="block hover:text-foreground text-xs">Sign in</Link>
+          <a href="https://www.trustpilot.com/review/bypassunlock.online" target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">★ Rate us on Trustpilot</a>
         </div>
       </div>
     </footer>
