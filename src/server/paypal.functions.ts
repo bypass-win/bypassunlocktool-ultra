@@ -2,7 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const PAYPAL_BASE = "https://api-m.paypal.com"; // live
+const PAYPAL_BASE =
+  (process.env.PAYPAL_ENV ?? "sandbox") === "live"
+    ? "https://api-m.paypal.com"
+    : "https://api-m.sandbox.paypal.com";
 
 async function getAccessToken() {
   const id = process.env.PAYPAL_CLIENT_ID!;
