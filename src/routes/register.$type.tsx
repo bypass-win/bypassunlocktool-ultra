@@ -31,6 +31,11 @@ function RegisterPage() {
   const [paid, setPaid] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [paypalClientId, setPaypalClientId] = useState<string>("");
+
+  useEffect(() => {
+    getPayPalClientId().then((r) => setPaypalClientId(r.clientId));
+  }, []);
 
   const baseModel: DeviceModel | null = MODELS.find((m) => m.id === modelId) ?? null;
   const model: DeviceModel | null = baseModel
