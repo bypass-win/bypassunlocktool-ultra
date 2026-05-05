@@ -30,7 +30,10 @@ function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const model: DeviceModel | null = MODELS.find((m) => m.id === modelId) ?? null;
+  const baseModel: DeviceModel | null = MODELS.find((m) => m.id === modelId) ?? null;
+  const model: DeviceModel | null = baseModel
+    ? (isPasscode ? { ...baseModel, price: 40 } : baseModel)
+    : null;
   const canContinue = serialConfirmed && serial.trim().length >= 10 && email.includes("@") && !!model;
 
   const submitRegistration = async (paymentMethod: string) => {
