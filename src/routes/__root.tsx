@@ -25,8 +25,16 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bypass Unlock — iCloud Activation & Passcode Bypass Tool" },
+      { title: "Bypass Unlock" },
       { name: "description", content: "Bypass Unlock removes iCloud Activation Lock and screen passcode on iPhone & iPad (iOS 18.7.2 → iOS 26.3.1, A12+). Register your serial and unlock in one click." },
+      { property: "og:title", content: "Bypass Unlock" },
+      { name: "twitter:title", content: "Bypass Unlock" },
+      { property: "og:description", content: "Bypass Unlock removes iCloud Activation Lock and screen passcode on iPhone & iPad (iOS 18.7.2 → iOS 26.3.1, A12+). Register your serial and unlock in one click." },
+      { name: "twitter:description", content: "Bypass Unlock removes iCloud Activation Lock and screen passcode on iPhone & iPad (iOS 18.7.2 → iOS 26.3.1, A12+). Register your serial and unlock in one click." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/4zUajBaWPwRtiiN2MXs35TPfVKz2/social-images/social-1777979207103-gemini-2.5-flash-image_make_it_more_quality_this_logo_and_add_a_iphone_15_device_while_it_processing_an-0.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/4zUajBaWPwRtiiN2MXs35TPfVKz2/social-images/social-1777979207103-gemini-2.5-flash-image_make_it_more_quality_this_logo_and_add_a_iphone_15_device_while_it_processing_an-0.webp" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
