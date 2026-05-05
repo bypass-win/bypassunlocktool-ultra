@@ -2,7 +2,10 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const PAYPAL_BASE = "https://api-m.paypal.com"; // live
+const PAYPAL_BASE =
+  (process.env.PAYPAL_ENV ?? "sandbox") === "live"
+    ? "https://api-m.paypal.com"
+    : "https://api-m.sandbox.paypal.com";
 
 async function getAccessToken() {
   const id = process.env.PAYPAL_CLIENT_ID!;
@@ -51,8 +54,11 @@ export const createPayPalOrder = createServerFn({ method: "POST" })
         ],
       }),
     });
-    const json = (await res.json()) as { id?: string; message?: string };
-    if (!res.ok || !json.id) throw new Error(json.message || "Failed to create order");
+    const json = (await res.json()) as { id?: string; message?: string; details?: any };
+    if (!res.ok || !json.id) {
+      console.error("PayPal createOrder failed:", res.status, JSON.stringify(json));
+      throw new Error(json.message ? `${json.message}: ${JSON.stringify(json.details ?? {})}` : "Failed to create order");
+    }
     return { orderId: json.id };
   });
 
