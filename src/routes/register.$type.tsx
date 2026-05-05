@@ -168,17 +168,33 @@ function RegisterPage() {
               {method === "paypal" && (
                 <div className="text-sm">
                   <p className="text-muted-foreground mb-3">
-                    You'll be redirected to PayPal to complete a ${model.price} payment.
+                    Pay ${model.price} securely via PayPal. Your order will be activated automatically.
                   </p>
-                  <a
-                    href={`https://paypal.me/${PAYPAL_HANDLE}/${model.price}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setTimeout(() => submitRegistration("paypal"), 800)}
-                    className="inline-block rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground"
-                  >
-                    Pay ${model.price} with PayPal
-                  </a>
+                  <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "sb", currency: "USD" }}>
+                    <PayPalButtons
+                      style={{ layout: "vertical", color: "blue" }}
+                      createOrder={async () => {
+                        const r = await createPayPalOrder({ data: { amount: model.price, serial, modelName: model.name } });
+                        return r.orderId;
+                      }}
+                      onApprove={async (data) => {
+                        try {
+                          await capturePayPalOrder({ data: {
+                            orderId: data.orderID,
+                            serial, email,
+                            modelId: model.id,
+                            modelName: model.name,
+                            unlockType: isPasscode ? "passcode" : "icloud",
+                            amount: model.price,
+                          }});
+                          setPaid(true);
+                        } catch (e: any) {
+                          setError(e.message || "Payment capture failed");
+                        }
+                      }}
+                      onError={(e: any) => setError(e?.message || "PayPal error")}
+                    />
+                  </PayPalScriptProvider>
                 </div>
               )}
 
