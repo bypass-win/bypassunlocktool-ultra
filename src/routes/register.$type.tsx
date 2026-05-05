@@ -2,6 +2,8 @@ import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import { MODELS, type DeviceModel } from "@/lib/pricing";
 import { supabase } from "@/integrations/supabase/client";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { createPayPalOrder, capturePayPalOrder } from "@/server/paypal.functions";
 
 export const Route = createFileRoute("/register/$type")({
   component: RegisterPage,
