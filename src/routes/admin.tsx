@@ -1,12 +1,15 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
-  head: () => ({ meta: [{ title: "Admin Dashboard — Bypass Unlock" }] }),
+  head: () => ({ meta: [{ title: "Admin Dashboard — Bypass Unlock" }, { name: "robots", content: "noindex" }] }),
 });
+
+const ADMIN_USER = "Eyoba@42";
+const ADMIN_PASS = "Eyoba@2772";
+const SESSION_KEY = "bu_admin_ok";
 
 type Reg = {
   id: string;
@@ -21,16 +24,47 @@ type Reg = {
 };
 
 function AdminPage() {
-  const { user, isAdmin, loading } = useAuth();
-  const navigate = useNavigate();
+  const [authed, setAuthed] = useState(false);
+  const [u, setU] = useState("");
+  const [p, setP] = useState("");
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1") setAuthed(true);
+  }, []);
+
+  if (!authed) {
+    return (
+      <main className="max-w-sm mx-auto px-6 py-16">
+        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Back to home</Link>
+        <h1 className="text-2xl font-bold mt-4 mb-6">Admin login</h1>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+              sessionStorage.setItem(SESSION_KEY, "1");
+              setAuthed(true);
+            } else setErr("Invalid credentials");
+          }}
+          className="space-y-3 border border-border rounded-md p-6"
+        >
+          <input value={u} onChange={(e) => setU(e.target.value)} placeholder="Username" className="w-full rounded-md bg-input border border-border px-3 py-2" />
+          <input type="password" value={p} onChange={(e) => setP(e.target.value)} placeholder="Password" className="w-full rounded-md bg-input border border-border px-3 py-2" />
+          {err && <p className="text-sm text-destructive">{err}</p>}
+          <button type="submit" className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground">Sign in</button>
+        </form>
+      </main>
+    );
+  }
+
+  return <Dashboard onLogout={() => { sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />;
+}
+
+function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<"orders" | "settings">("orders");
   const [regs, setRegs] = useState<Reg[]>([]);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState("");
-
-  useEffect(() => {
-    if (!loading && (!user || !isAdmin)) navigate({ to: "/auth" });
-  }, [user, isAdmin, loading, navigate]);
 
   const loadRegs = async () => {
     const { data } = await supabase.from("registrations").select("*").order("created_at", { ascending: false });
@@ -45,7 +79,7 @@ function AdminPage() {
     }
   };
 
-  useEffect(() => { if (isAdmin) { loadRegs(); loadSettings(); } }, [isAdmin]);
+  useEffect(() => { loadRegs(); loadSettings(); }, []);
 
   const updateStatus = async (id: string, status: string) => {
     await supabase.from("registrations").update({ status: status as "pending" | "processing" | "completed" | "failed" }).eq("id", id);
@@ -62,12 +96,12 @@ function AdminPage() {
     setTimeout(() => setSaved(""), 1500);
   };
 
-  if (loading) return <main className="max-w-5xl mx-auto p-6">Loading…</main>;
-  if (!isAdmin) return null;
-
   return (
     <main className="max-w-5xl mx-auto px-6 py-8">
-      <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Back to home</Link>
+      <div className="flex items-center justify-between">
+        <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Back to home</Link>
+        <button onClick={onLogout} className="text-sm text-muted-foreground hover:text-foreground">Sign out</button>
+      </div>
       <h1 className="text-2xl font-bold mt-4 mb-6">Admin Dashboard</h1>
 
       <div className="flex gap-2 mb-6 border-b border-border">
