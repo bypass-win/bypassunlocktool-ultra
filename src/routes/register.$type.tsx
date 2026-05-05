@@ -175,7 +175,8 @@ function RegisterPage() {
                   <p className="text-muted-foreground mb-3">
                     Pay ${model.price} securely via PayPal. Your order will be activated automatically.
                   </p>
-                  <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "sb", currency: "USD" }}>
+                  {paypalClientId ? (
+                  <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "USD" }}>
                     <PayPalButtons
                       style={{ layout: "vertical", color: "blue" }}
                       createOrder={async () => {
