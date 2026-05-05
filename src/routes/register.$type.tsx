@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MODELS, type DeviceModel } from "@/lib/pricing";
 import { supabase } from "@/integrations/supabase/client";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { createPayPalOrder, capturePayPalOrder, getPayPalClientId } from "@/server/paypal.functions";
 
 export const Route = createFileRoute("/register/$type")({
   component: RegisterPage,
@@ -29,6 +31,11 @@ function RegisterPage() {
   const [paid, setPaid] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [paypalClientId, setPaypalClientId] = useState<string>("");
+
+  useEffect(() => {
+    getPayPalClientId().then((r) => setPaypalClientId(r.clientId));
+  }, []);
 
   const baseModel: DeviceModel | null = MODELS.find((m) => m.id === modelId) ?? null;
   const model: DeviceModel | null = baseModel
@@ -166,17 +173,37 @@ function RegisterPage() {
               {method === "paypal" && (
                 <div className="text-sm">
                   <p className="text-muted-foreground mb-3">
-                    You'll be redirected to PayPal to complete a ${model.price} payment.
+                    Pay ${model.price} securely via PayPal. Your order will be activated automatically.
                   </p>
-                  <a
-                    href={`https://paypal.me/${PAYPAL_HANDLE}/${model.price}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setTimeout(() => submitRegistration("paypal"), 800)}
-                    className="inline-block rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground"
-                  >
-                    Pay ${model.price} with PayPal
-                  </a>
+                  {paypalClientId ? (
+                  <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "USD" }}>
+                    <PayPalButtons
+                      style={{ layout: "vertical", color: "blue" }}
+                      createOrder={async () => {
+                        const r = await createPayPalOrder({ data: { amount: model.price, serial, modelName: model.name } });
+                        return r.orderId;
+                      }}
+                      onApprove={async (data) => {
+                        try {
+                          await capturePayPalOrder({ data: {
+                            orderId: data.orderID,
+                            serial, email,
+                            modelId: model.id,
+                            modelName: model.name,
+                            unlockType: isPasscode ? "passcode" : "icloud",
+                            amount: model.price,
+                          }});
+                          setPaid(true);
+                        } catch (e: any) {
+                          setError(e.message || "Payment capture failed");
+                        }
+                      }}
+                      onError={(e: any) => setError(e?.message || "PayPal error")}
+                    />
+                  </PayPalScriptProvider>
+                  ) : (
+                    <p className="text-muted-foreground">Loading PayPal…</p>
+                  )}
                 </div>
               )}
 
