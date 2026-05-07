@@ -259,7 +259,7 @@ function RegisterPage() {
                   onClick={() => setMethod("card")}
                   className={`rounded-md border p-3 text-left text-sm ${method === "card" ? "border-primary" : "border-border"}`}
                 >
-                  Mastercard / Debit card
+                  Mastercard / Debit card (maintenance)
                 </button>
                 <button
                   onClick={() => setMethod("paypal")}
@@ -349,19 +349,20 @@ function RegisterPage() {
               )}
 
               {method === "card" && (
-                <div className="space-y-3 text-sm">
-                  <p className="text-muted-foreground">
-                    You'll be redirected to a secure NOWPayments-hosted checkout to pay
-                    ${model.price} with Mastercard / Visa / Debit. After payment, your
-                    order activates automatically.
-                  </p>
-                  <button
-                    onClick={startCardPayment}
-                    disabled={submitting}
-                    className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground disabled:opacity-50"
-                  >
-                    {submitting ? "Redirecting…" : `Pay $${model.price} with card`}
-                  </button>
+                <div className="text-sm">
+                  <div className="rounded-md border border-warning/40 bg-warning/5 p-4 text-center">
+                    <p className="font-semibold text-warning mb-1">Card payments are under maintenance</p>
+                    <p className="text-muted-foreground">
+                      Mastercard / Visa / Debit card payments are temporarily unavailable.
+                      Please proceed with the <span className="text-foreground font-medium">Crypto (USDT)</span> option above for instant activation.
+                    </p>
+                    <button
+                      onClick={() => setMethod("crypto")}
+                      className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                    >
+                      Switch to Crypto payment
+                    </button>
+                  </div>
                 </div>
               )}
             </>
