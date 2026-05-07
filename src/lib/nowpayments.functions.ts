@@ -12,13 +12,6 @@ export const getCryptoCurrencies = createServerFn({ method: "GET" }).handler(asy
       { code: "usdtbsc", label: "USDT — BEP20 (BNB Chain)" },
       { code: "usdterc20", label: "USDT — ERC20 (Ethereum)" },
       { code: "usdtmatic", label: "USDT — Polygon" },
-      { code: "usdcbsc", label: "USDC — BEP20" },
-      { code: "usdcmatic", label: "USDC — Polygon" },
-      { code: "btc", label: "Bitcoin (BTC)" },
-      { code: "eth", label: "Ethereum (ETH)" },
-      { code: "bnbbsc", label: "BNB (BEP20)" },
-      { code: "ltc", label: "Litecoin (LTC)" },
-      { code: "trx", label: "Tron (TRX)" },
     ],
   };
 });
