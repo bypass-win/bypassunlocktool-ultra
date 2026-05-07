@@ -8,6 +8,7 @@ import {
   createCryptoPayment,
   getCryptoCurrencies,
   getCryptoPaymentStatus,
+  createCardInvoice,
 } from "@/lib/nowpayments.functions";
 
 export const Route = createFileRoute("/register/$type")({
@@ -130,6 +131,28 @@ function RegisterPage() {
     } catch (e: any) {
       setError(e.message || "Could not start crypto payment");
     } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const startCardPayment = async () => {
+    if (!model) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      const r = await createCardInvoice({
+        data: {
+          amount: model.price,
+          serial: serial.trim(),
+          email: email.trim(),
+          modelId: model.id,
+          modelName: model.name,
+          unlockType: isPasscode ? "passcode" : "icloud",
+        },
+      });
+      window.location.href = r.invoiceUrl;
+    } catch (e: any) {
+      setError(e.message || "Could not start card payment");
       setSubmitting(false);
     }
   };
@@ -326,20 +349,20 @@ function RegisterPage() {
               )}
 
               {method === "card" && (
-                <form
-                  onSubmit={(e) => { e.preventDefault(); submitRegistration("card"); }}
-                  className="space-y-3 text-sm"
-                >
-                  <input required value={card.name} onChange={(e) => setCard({ ...card, name: e.target.value })} placeholder="Cardholder name" className="w-full rounded-md bg-input border border-border px-3 py-2" />
-                  <input required value={card.number} onChange={(e) => setCard({ ...card, number: e.target.value })} placeholder="Card number" inputMode="numeric" maxLength={19} className="w-full rounded-md bg-input border border-border px-3 py-2 font-mono" />
-                  <div className="grid grid-cols-2 gap-3">
-                    <input required value={card.exp} onChange={(e) => setCard({ ...card, exp: e.target.value })} placeholder="MM/YY" maxLength={5} className="rounded-md bg-input border border-border px-3 py-2 font-mono" />
-                    <input required value={card.cvc} onChange={(e) => setCard({ ...card, cvc: e.target.value })} placeholder="CVC" maxLength={4} className="rounded-md bg-input border border-border px-3 py-2 font-mono" />
-                  </div>
-                  <button disabled={submitting} className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground disabled:opacity-50">
-                    {submitting ? "Submitting…" : `Pay $${model.price} & Register`}
+                <div className="space-y-3 text-sm">
+                  <p className="text-muted-foreground">
+                    You'll be redirected to a secure NOWPayments-hosted checkout to pay
+                    ${model.price} with Mastercard / Visa / Debit. After payment, your
+                    order activates automatically.
+                  </p>
+                  <button
+                    onClick={startCardPayment}
+                    disabled={submitting}
+                    className="w-full rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground disabled:opacity-50"
+                  >
+                    {submitting ? "Redirecting…" : `Pay $${model.price} with card`}
                   </button>
-                </form>
+                </div>
               )}
             </>
           )}
