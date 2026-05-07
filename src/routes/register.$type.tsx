@@ -172,38 +172,12 @@ function RegisterPage() {
 
               {method === "paypal" && (
                 <div className="text-sm">
-                  <p className="text-muted-foreground mb-3">
-                    Pay ${model.price} securely via PayPal. Your order will be activated automatically.
-                  </p>
-                  {paypalClientId ? (
-                  <PayPalScriptProvider options={{ clientId: paypalClientId, currency: "USD" }}>
-                    <PayPalButtons
-                      style={{ layout: "vertical", color: "blue" }}
-                      createOrder={async () => {
-                        const r = await createPayPalOrder({ data: { amount: model.price, serial, modelName: model.name } });
-                        return r.orderId;
-                      }}
-                      onApprove={async (data) => {
-                        try {
-                          await capturePayPalOrder({ data: {
-                            orderId: data.orderID,
-                            serial, email,
-                            modelId: model.id,
-                            modelName: model.name,
-                            unlockType: isPasscode ? "passcode" : "icloud",
-                            amount: model.price,
-                          }});
-                          setPaid(true);
-                        } catch (e: any) {
-                          setError(e.message || "Payment capture failed");
-                        }
-                      }}
-                      onError={(e: any) => setError(e?.message || "PayPal error")}
-                    />
-                  </PayPalScriptProvider>
-                  ) : (
-                    <p className="text-muted-foreground">Loading PayPal…</p>
-                  )}
+                  <div className="rounded-md border border-warning/40 bg-warning/5 p-4 text-center">
+                    <p className="font-semibold text-warning mb-1">PayPal is under maintenance</p>
+                    <p className="text-muted-foreground">
+                      Our PayPal payment method is temporarily unavailable. Please come back later or use Mastercard / Debit card instead.
+                    </p>
+                  </div>
                 </div>
               )}
 
