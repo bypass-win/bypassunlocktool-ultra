@@ -37,9 +37,9 @@ export const Route = createFileRoute("/api/public/nowpayments-webhook")({
         const paymentStatus = String(parsed.payment_status || "").toLowerCase();
         if (!orderId) return new Response("ok");
 
-        let newStatus: "completed" | "processing" | "cancelled" | null = null;
+        let newStatus: "completed" | "processing" | "failed" | null = null;
         if (["finished", "confirmed"].includes(paymentStatus)) newStatus = "completed";
-        else if (["failed", "expired", "refunded"].includes(paymentStatus)) newStatus = "cancelled";
+        else if (["failed", "expired", "refunded"].includes(paymentStatus)) newStatus = "failed";
         else if (["partially_paid", "confirming", "sending", "waiting"].includes(paymentStatus)) newStatus = "processing";
 
         if (newStatus) {
