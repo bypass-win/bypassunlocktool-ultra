@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatusRouteImport } from './routes/status'
+import { Route as OtaBlockerRouteImport } from './routes/ota-blocker'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterTypeRouteImport } from './routes/register.$type'
@@ -18,6 +19,11 @@ import { Route as ApiPublicNowpaymentsWebhookRouteImport } from './routes/api/pu
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
   path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OtaBlockerRoute = OtaBlockerRouteImport.update({
+  id: '/ota-blocker',
+  path: '/ota-blocker',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -45,6 +51,7 @@ const ApiPublicNowpaymentsWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ota-blocker': typeof OtaBlockerRoute
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
@@ -52,6 +59,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ota-blocker': typeof OtaBlockerRoute
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
@@ -60,6 +68,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ota-blocker': typeof OtaBlockerRoute
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
@@ -69,6 +78,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/ota-blocker'
     | '/status'
     | '/register/$type'
     | '/api/public/nowpayments-webhook'
@@ -76,6 +86,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/ota-blocker'
     | '/status'
     | '/register/$type'
     | '/api/public/nowpayments-webhook'
@@ -83,6 +94,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/ota-blocker'
     | '/status'
     | '/register/$type'
     | '/api/public/nowpayments-webhook'
@@ -91,6 +103,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  OtaBlockerRoute: typeof OtaBlockerRoute
   StatusRoute: typeof StatusRoute
   RegisterTypeRoute: typeof RegisterTypeRoute
   ApiPublicNowpaymentsWebhookRoute: typeof ApiPublicNowpaymentsWebhookRoute
@@ -103,6 +116,13 @@ declare module '@tanstack/react-router' {
       path: '/status'
       fullPath: '/status'
       preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ota-blocker': {
+      id: '/ota-blocker'
+      path: '/ota-blocker'
+      fullPath: '/ota-blocker'
+      preLoaderRoute: typeof OtaBlockerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -139,6 +159,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  OtaBlockerRoute: OtaBlockerRoute,
   StatusRoute: StatusRoute,
   RegisterTypeRoute: RegisterTypeRoute,
   ApiPublicNowpaymentsWebhookRoute: ApiPublicNowpaymentsWebhookRoute,
@@ -146,3 +167,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
