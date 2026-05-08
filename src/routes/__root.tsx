@@ -37,6 +37,8 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
     ],
     links: [
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "shortcut icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
