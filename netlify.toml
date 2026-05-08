@@ -1,9 +1,7 @@
 [build]
-  base = "/"
-  publish = "dist"
-  command = "npm run build"
+  command = "vite build --config vite.netlify.config.ts"
+  publish = "dist/client"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# TanStack Start server functions, SSR, server routes, and the
+# /api/public/nowpayments-webhook are mapped to Netlify Functions
+# automatically by @netlify/vite-plugin-tanstack-start. No redirects needed.
