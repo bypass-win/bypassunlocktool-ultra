@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import telegramLogo from "@/assets/telegram-logo.ico";
 
-const TELEGRAM_URL = "https://t.me/BYPASS_UNLOCK";
+const TELEGRAM_URL = "https://t.me/BYPASS_UNLOCK_TOOL";
 const KEY = "telegram_popup_shown";
 
 export function TelegramPopup() {
