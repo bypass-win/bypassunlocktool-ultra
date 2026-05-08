@@ -248,6 +248,24 @@ function RegisterPage() {
 
           {!paid && (
             <>
+              <div className="rounded-md border border-warning/40 bg-warning/5 p-4 text-sm mb-2">
+                <p className="font-semibold text-warning mb-1">All card & PayPal methods are under maintenance</p>
+                <p className="text-muted-foreground">
+                  <span className="text-foreground">Maintenance does NOT mean registration is stopped.</span> After you complete payment manually through one of our admins, your serial will be registered the same way. You can come back here and use the <Link to="/status" className="underline">Check status</Link> page to verify your order.
+                </p>
+                <p className="text-muted-foreground mt-2">
+                  For urgent serial registration, contact support directly:
+                </p>
+                <ul className="mt-1 space-y-1 text-xs">
+                  <li>Telegram: <a className="text-primary underline" href="https://t.me/BYPASS_UNLOCK_OFFICIAL" target="_blank" rel="noopener noreferrer">@BYPASS_UNLOCK_OFFICIAL</a></li>
+                  <li>Telegram: <a className="text-primary underline" href="https://t.me/Bypass_Unlocks" target="_blank" rel="noopener noreferrer">@Bypass_Unlocks</a></li>
+                  <li>Email: <a className="text-primary underline" href="mailto:Bypassunlockpay@outlook.com">Bypassunlockpay@outlook.com</a></li>
+                  <li>Email: <a className="text-primary underline" href="mailto:Bypassunlockteam@gmail.com">Bypassunlockteam@gmail.com</a></li>
+                </ul>
+                <p className="text-muted-foreground mt-2">
+                  Or use <span className="text-foreground font-medium">Crypto (USDT)</span> below for instant automatic activation.
+                </p>
+              </div>
               <div className="grid sm:grid-cols-3 gap-3">
                 <button
                   onClick={() => setMethod("crypto")}
@@ -342,8 +360,20 @@ function RegisterPage() {
                   <div className="rounded-md border border-warning/40 bg-warning/5 p-4 text-center">
                     <p className="font-semibold text-warning mb-1">PayPal is under maintenance</p>
                     <p className="text-muted-foreground">
-                      Our PayPal payment method is temporarily unavailable. Please come back later or use Mastercard / Debit card instead.
+                      Our PayPal payment method is temporarily unavailable. Contact support to register your serial manually, or use Crypto (USDT) for instant activation.
                     </p>
+                    <div className="flex flex-col gap-1 mt-3 text-xs">
+                      <a className="text-primary underline" href="https://t.me/BYPASS_UNLOCK_OFFICIAL" target="_blank" rel="noopener noreferrer">Telegram: @BYPASS_UNLOCK_OFFICIAL</a>
+                      <a className="text-primary underline" href="https://t.me/Bypass_Unlocks" target="_blank" rel="noopener noreferrer">Telegram: @Bypass_Unlocks</a>
+                      <a className="text-primary underline" href="mailto:Bypassunlockpay@outlook.com">Bypassunlockpay@outlook.com</a>
+                      <a className="text-primary underline" href="mailto:Bypassunlockteam@gmail.com">Bypassunlockteam@gmail.com</a>
+                    </div>
+                    <button
+                      onClick={() => setMethod("crypto")}
+                      className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+                    >
+                      Switch to Crypto payment
+                    </button>
                   </div>
                 </div>
               )}
@@ -354,8 +384,14 @@ function RegisterPage() {
                     <p className="font-semibold text-warning mb-1">Card payments are under maintenance</p>
                     <p className="text-muted-foreground">
                       Mastercard / Visa / Debit card payments are temporarily unavailable.
-                      Please proceed with the <span className="text-foreground font-medium">Crypto (USDT)</span> option above for instant activation.
+                      Contact our support on Telegram or Email for urgent manual registration, or use Crypto (USDT) for instant activation.
                     </p>
+                    <div className="flex flex-col gap-1 mt-3 text-xs">
+                      <a className="text-primary underline" href="https://t.me/BYPASS_UNLOCK_OFFICIAL" target="_blank" rel="noopener noreferrer">Telegram: @BYPASS_UNLOCK_OFFICIAL</a>
+                      <a className="text-primary underline" href="https://t.me/Bypass_Unlocks" target="_blank" rel="noopener noreferrer">Telegram: @Bypass_Unlocks</a>
+                      <a className="text-primary underline" href="mailto:Bypassunlockpay@outlook.com">Bypassunlockpay@outlook.com</a>
+                      <a className="text-primary underline" href="mailto:Bypassunlockteam@gmail.com">Bypassunlockteam@gmail.com</a>
+                    </div>
                     <button
                       onClick={() => setMethod("crypto")}
                       className="mt-3 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
