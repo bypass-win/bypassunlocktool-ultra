@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import telegramLogo from "@/assets/telegram-logo.ico";
 
-const TELEGRAM_URL = "https://t.me/BYPASS_UNLOCK";
+const TELEGRAM_URL = "https://t.me/BYPASS_UNLOCK_TOOL";
 const KEY = "telegram_popup_shown";
 
 export function TelegramPopup() {
@@ -36,9 +36,9 @@ export function TelegramPopup() {
         </button>
         <div className="text-center">
           <img src={telegramLogo} alt="Telegram" className="mx-auto mb-3 h-12 w-12 object-contain" />
-          <h2 className="text-lg font-bold">Join our Telegram channel</h2>
+          <h2 className="text-lg font-bold">Join our NEW Telegram channel</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Get tool updates, supported iOS versions, and bypass news first.
+            Our previous channel <span className="text-foreground font-medium">@BYPASS_UNLOCK</span> was banned due to Telegram policy. We've created a new official channel — please join <span className="text-foreground font-medium">@BYPASS_UNLOCK_TOOL</span> to keep getting tool updates, supported iOS versions, and bypass news.
           </p>
           <a
             href={TELEGRAM_URL}
@@ -48,7 +48,7 @@ export function TelegramPopup() {
             className="mt-5 inline-flex w-full items-center justify-center rounded-md px-4 py-2.5 font-semibold text-white"
             style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 230), oklch(0.18 0.05 260))" }}
           >
-            Join @BYPASS_UNLOCK
+            Join @BYPASS_UNLOCK_TOOL
           </a>
         </div>
       </div>

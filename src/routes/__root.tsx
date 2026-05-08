@@ -128,7 +128,7 @@ function Footer() {
           <div>
             <p className="font-semibold text-foreground">Contact</p>
             <a href={`mailto:${settings.contact_email}`} className="block hover:text-foreground text-xs mt-1">{settings.contact_email}</a>
-            <a href={settings.telegram_url} target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">Telegram: @BYPASS_UNLOCK</a>
+            <a href={settings.telegram_url} target="_blank" rel="noopener noreferrer" className="block hover:text-foreground text-xs">Telegram: @BYPASS_UNLOCK_TOOL</a>
           </div>
           <div>
             <p className="font-semibold text-foreground">Links</p>

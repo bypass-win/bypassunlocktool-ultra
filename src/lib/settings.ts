@@ -6,7 +6,7 @@ export type Settings = Record<string, string>;
 const DEFAULTS: Settings = {
   download_url_windows: "https://mega.nz/file/IypkXQwQ#3tZTniXjKPN6BrB5DlT1sUxbdone-q_LYY8tA6rNna8",
   payments_enabled: "true",
-  telegram_url: "https://t.me/BYPASS_UNLOCK",
+  telegram_url: "https://t.me/BYPASS_UNLOCK_TOOL",
   contact_email: "BypassUnlocktool@outlook.com",
   website_url: "BypassUnlock.online",
   tool_version: "1.0.0",
