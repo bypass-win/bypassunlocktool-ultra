@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Settings as GearIcon } from "lucide-react";
 import { useSettings } from "@/lib/settings";
-import otaHero from "@/assets/ota-hero.png";
 import otaStep1 from "@/assets/ota-step1.png";
 import otaStep2 from "@/assets/ota-step2.png";
 
@@ -21,7 +21,9 @@ function OtaBlockerPage() {
   return (
     <main className="bg-white text-black min-h-screen">
       <section className="max-w-4xl mx-auto px-6 py-14 text-center">
-        <img src={otaHero} alt="OTA Update Blocker" className="mx-auto h-32 w-auto object-contain" />
+        <div className="mx-auto flex items-center justify-center h-28 w-28">
+          <GearIcon className="h-24 w-24 text-blue-500 ota-gear-spin drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]" strokeWidth={1.5} />
+        </div>
         <h1 className="mt-6 text-4xl md:text-5xl font-bold leading-tight">
           Download OTA Update Blocker Profile for iPhone and iPad
         </h1>

@@ -74,3 +74,13 @@
     min-height: 100vh;
   }
 }
+
+@keyframes ota-gear-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.ota-gear-spin {
+  animation: ota-gear-spin 6s linear infinite;
+  transform-origin: center;
+}
