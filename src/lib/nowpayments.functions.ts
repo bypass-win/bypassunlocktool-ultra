@@ -51,7 +51,8 @@ export const createCryptoPayment = createServerFn({ method: "POST" })
     if (insErr || !reg) throw new Error(insErr?.message || "Could not create order");
 
     // 2) Create NOWPayments invoice/payment
-    const ipnUrl = `${process.env.SUPABASE_URL ? "" : ""}https://project--43b2e91a-3031-4c5c-ae3a-6280196eb079.lovable.app/api/public/nowpayments-webhook`;
+    const origin = process.env.SITE_URL || "https://bypassunlock.online";
+    const ipnUrl = `${origin}/api/public/nowpayments-webhook`;
     const res = await fetch(`${NP_BASE}/payment`, {
       method: "POST",
       headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
@@ -115,7 +116,7 @@ export const createCardInvoice = createServerFn({ method: "POST" })
     const apiKey = process.env.NOWPAYMENTS_API_KEY;
     if (!apiKey) throw new Error("Card payments not configured");
 
-    const origin = "https://project--43b2e91a-3031-4c5c-ae3a-6280196eb079.lovable.app";
+    const origin = process.env.SITE_URL || "https://bypassunlock.online";
 
     const { data: reg, error: insErr } = await supabaseAdmin
       .from("registrations")
