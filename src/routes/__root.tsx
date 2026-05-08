@@ -24,7 +24,7 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=1280" },
       { title: "Bypass Unlock" },
       { name: "description", content: "Bypass Unlock removes iCloud Activation Lock and screen passcode on iPhone & iPad (iOS 18.7.2 → iOS 26.3.1, A12+). Register your serial and unlock in one click." },
       { property: "og:title", content: "Bypass Unlock" },
