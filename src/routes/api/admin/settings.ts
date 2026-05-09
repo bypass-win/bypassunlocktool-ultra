@@ -34,9 +34,9 @@ export const Route = createFileRoute("/api/admin/settings")({
         }
       },
 
-      POST: async (req) => {
+      POST: async ({ request }) => {
         try {
-          const body = await req.json();
+          const body = await request.json();
           const { key, value } = body;
 
           const { error } = await supabaseAdmin
