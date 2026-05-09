@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as StatusRouteImport } from './routes/status'
 import { Route as OtaBlockerRouteImport } from './routes/ota-blocker'
+import { Route as LatestDotjsonRouteImport } from './routes/latest[.]json'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterTypeRouteImport } from './routes/register.$type'
@@ -24,6 +25,11 @@ const StatusRoute = StatusRouteImport.update({
 const OtaBlockerRoute = OtaBlockerRouteImport.update({
   id: '/ota-blocker',
   path: '/ota-blocker',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LatestDotjsonRoute = LatestDotjsonRouteImport.update({
+  id: '/latest.json',
+  path: '/latest.json',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -51,6 +57,7 @@ const ApiPublicNowpaymentsWebhookRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/latest.json': typeof LatestDotjsonRoute
   '/ota-blocker': typeof OtaBlockerRoute
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/latest.json': typeof LatestDotjsonRoute
   '/ota-blocker': typeof OtaBlockerRoute
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/latest.json': typeof LatestDotjsonRoute
   '/ota-blocker': typeof OtaBlockerRoute
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/latest.json'
     | '/ota-blocker'
     | '/status'
     | '/register/$type'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/latest.json'
     | '/ota-blocker'
     | '/status'
     | '/register/$type'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/latest.json'
     | '/ota-blocker'
     | '/status'
     | '/register/$type'
@@ -103,6 +115,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  LatestDotjsonRoute: typeof LatestDotjsonRoute
   OtaBlockerRoute: typeof OtaBlockerRoute
   StatusRoute: typeof StatusRoute
   RegisterTypeRoute: typeof RegisterTypeRoute
@@ -123,6 +136,13 @@ declare module '@tanstack/react-router' {
       path: '/ota-blocker'
       fullPath: '/ota-blocker'
       preLoaderRoute: typeof OtaBlockerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/latest.json': {
+      id: '/latest.json'
+      path: '/latest.json'
+      fullPath: '/latest.json'
+      preLoaderRoute: typeof LatestDotjsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -159,6 +179,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  LatestDotjsonRoute: LatestDotjsonRoute,
   OtaBlockerRoute: OtaBlockerRoute,
   StatusRoute: StatusRoute,
   RegisterTypeRoute: RegisterTypeRoute,
@@ -167,3 +188,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
