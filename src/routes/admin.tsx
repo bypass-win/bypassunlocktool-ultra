@@ -1,3 +1,4 @@
+// src/routes/admin.tsx - UPDATED VERSION
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,40 +62,119 @@ function AdminPage() {
 }
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
-  const [tab, setTab] = useState<"orders" | "settings">("orders");
+  const [tab, setTab] = useState<"orders" | "settings">("settings");
   const [regs, setRegs] = useState<Reg[]>([]);
   const [settings, setSettings] = useState<Record<string, string>>({});
   const [saved, setSaved] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const loadRegs = async () => {
-    const { data } = await supabase.from("registrations").select("*").order("created_at", { ascending: false });
-    if (data) setRegs(data as Reg[]);
-  };
-  const loadSettings = async () => {
-    const { data } = await supabase.from("site_settings").select("key,value");
-    if (data) {
-      const m: Record<string, string> = {};
-      data.forEach((r: any) => { m[r.key] = r.value; });
-      setSettings(m);
+    try {
+      const { data, error: err } = await supabase.from("registrations").select("*").order("created_at", { ascending: false });
+      if (err) {
+        console.error("Error loading registrations:", err);
+        setError(`Failed to load registrations: ${err.message}`);
+        return;
+      }
+      if (data) setRegs(data as Reg[]);
+    } catch (e) {
+      console.error("Exception loading registrations:", e);
+      setError(`Exception loading registrations: ${String(e)}`);
     }
   };
 
-  useEffect(() => { loadRegs(); loadSettings(); }, []);
+  const loadSettings = async () => {
+    try {
+      const { data, error: err } = await supabase.from("site_settings").select("key,value");
+      if (err) {
+        console.error("Error loading settings:", err);
+        setError(`Failed to load settings: ${err.message}`);
+        setLoading(false);
+        return;
+      }
+      if (data && data.length > 0) {
+        const m: Record<string, string> = {};
+        data.forEach((r: any) => { m[r.key] = r.value; });
+        setSettings(m);
+        console.log("Settings loaded:", m);
+      } else {
+        console.warn("No settings found in database");
+        setError("No settings found. Please check your database.");
+      }
+      setLoading(false);
+    } catch (e) {
+      console.error("Exception loading settings:", e);
+      setError(`Exception loading settings: ${String(e)}`);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { 
+    loadSettings(); 
+    loadRegs(); 
+  }, []);
 
   const updateStatus = async (id: string, status: string) => {
-    await supabase.from("registrations").update({ status: status as "pending" | "processing" | "completed" | "failed" }).eq("id", id);
-    loadRegs();
+    try {
+      const { error: err } = await supabase.from("registrations").update({ status: status as "pending" | "processing" | "completed" | "failed" }).eq("id", id);
+      if (err) {
+        console.error("Error updating status:", err);
+        setError(`Failed to update status: ${err.message}`);
+        return;
+      }
+      loadRegs();
+    } catch (e) {
+      console.error("Exception updating status:", e);
+      setError(`Exception updating status: ${String(e)}`);
+    }
   };
+
   const deleteReg = async (id: string) => {
     if (!confirm("Delete this registration?")) return;
-    await supabase.from("registrations").delete().eq("id", id);
-    loadRegs();
+    try {
+      const { error: err } = await supabase.from("registrations").delete().eq("id", id);
+      if (err) {
+        console.error("Error deleting registration:", err);
+        setError(`Failed to delete registration: ${err.message}`);
+        return;
+      }
+      loadRegs();
+    } catch (e) {
+      console.error("Exception deleting registration:", e);
+      setError(`Exception deleting registration: ${String(e)}`);
+    }
   };
+
   const saveSetting = async (key: string, value: string) => {
-    await supabase.from("site_settings").upsert({ key, value });
-    setSaved(key);
-    setTimeout(() => setSaved(""), 1500);
+    try {
+      const { error: err } = await supabase.from("site_settings").upsert({ key, value });
+      if (err) {
+        console.error("Error saving setting:", err);
+        setError(`Failed to save setting: ${err.message}`);
+        return;
+      }
+      setSaved(key);
+      setTimeout(() => setSaved(""), 1500);
+      loadSettings();
+    } catch (e) {
+      console.error("Exception saving setting:", e);
+      setError(`Exception saving setting: ${String(e)}`);
+    }
   };
+
+  if (loading) {
+    return (
+      <main className="max-w-5xl mx-auto px-6 py-8">
+        <div className="flex items-center justify-between">
+          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">← Back to home</Link>
+          <button onClick={onLogout} className="text-sm text-muted-foreground hover:text-foreground">Sign out</button>
+        </div>
+        <h1 className="text-2xl font-bold mt-4 mb-6">Admin Dashboard</h1>
+        <p className="text-muted-foreground">Loading...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-8">
@@ -103,6 +183,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         <button onClick={onLogout} className="text-sm text-muted-foreground hover:text-foreground">Sign out</button>
       </div>
       <h1 className="text-2xl font-bold mt-4 mb-6">Admin Dashboard</h1>
+
+      {error && <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">{error}</div>}
 
       <div className="flex gap-2 mb-6 border-b border-border">
         <button onClick={() => setTab("orders")} className={`px-4 py-2 text-sm font-medium border-b-2 ${tab === "orders" ? "border-primary text-foreground" : "border-transparent text-muted-foreground"}`}>Orders & Payments</button>
@@ -126,61 +208,5 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               </tr>
             </thead>
             <tbody>
-              {regs.length === 0 && <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">No registrations yet</td></tr>}
-              {regs.map((r) => (
-                <tr key={r.id} className="border-t border-border">
-                  <td className="p-3 text-xs">{new Date(r.created_at).toLocaleString()}</td>
-                  <td className="p-3 font-mono text-xs">{r.serial}</td>
-                  <td className="p-3 text-xs">{r.email}</td>
-                  <td className="p-3 text-xs">{r.model_name}</td>
-                  <td className="p-3 text-xs">{r.unlock_type}</td>
-                  <td className="p-3">${r.amount}</td>
-                  <td className="p-3 text-xs">{r.payment_method ?? "—"}</td>
-                  <td className="p-3">
-                    <select value={r.status} onChange={(e) => updateStatus(r.id, e.target.value)} className="rounded bg-input border border-border px-2 py-1 text-xs">
-                      <option value="pending">pending</option>
-                      <option value="processing">processing</option>
-                      <option value="completed">completed</option>
-                      <option value="failed">failed</option>
-                    </select>
-                  </td>
-                  <td className="p-3"><button onClick={() => deleteReg(r.id)} className="text-xs text-destructive hover:underline">Delete</button></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {tab === "settings" && (
-        <div className="space-y-4 max-w-2xl">
-          {Object.entries(settings).map(([key, value]) => (
-            <div key={key} className="border border-border rounded-md p-4">
-              <label className="block text-sm font-medium mb-2">{key}</label>
-              {key === "payments_enabled" ? (
-                <select
-                  value={value}
-                  onChange={(e) => { setSettings({ ...settings, [key]: e.target.value }); saveSetting(key, e.target.value); }}
-                  className="rounded bg-input border border-border px-3 py-2 text-sm"
-                >
-                  <option value="true">Open (true)</option>
-                  <option value="false">Closed (false)</option>
-                </select>
-              ) : (
-                <div className="flex gap-2">
-                  <input
-                    value={value}
-                    onChange={(e) => setSettings({ ...settings, [key]: e.target.value })}
-                    className="flex-1 rounded bg-input border border-border px-3 py-2 text-sm font-mono"
-                  />
-                  <button onClick={() => saveSetting(key, settings[key])} className="rounded bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Save</button>
-                </div>
-              )}
-              {saved === key && <p className="text-xs text-success mt-2">Saved ✓</p>}
-            </div>
-          ))}
-        </div>
-      )}
-    </main>
-  );
-}
+              {regs.length === 0 && <tr><td colSpan={9} className="p-6 text-center text-muted-foreground">No registrations yet
+
