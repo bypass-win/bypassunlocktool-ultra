@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -61,19 +62,20 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     try {
       setLoading(true);
       setError(null);
-      
-      const res = await fetch("/api/admin/settings");
-      const data = await res.json();
 
-      if (!res.ok) {
-        setError(`Error: ${data.error || "Failed to load settings"}`);
+      const { data, error: err } = await supabase
+        .from("site_settings")
+        .select("key,value");
+
+      if (err) {
+        setError(`Error: ${err.message}`);
         return;
       }
 
-      setSettings(data);
-      console.log("Settings loaded:", data);
+      const m: Record<string, string> = {};
+      (data ?? []).forEach((r: any) => { m[r.key] = r.value; });
+      setSettings(m);
     } catch (e: any) {
-      console.error("Exception loading settings:", e);
       setError(`Error: ${e.message}`);
     } finally {
       setLoading(false);
@@ -82,16 +84,12 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
   const saveSetting = async (key: string, value: string) => {
     try {
-      const res = await fetch("/api/admin/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, value }),
-      });
+      const { error: err } = await supabase
+        .from("site_settings")
+        .upsert({ key, value }, { onConflict: "key" });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(`Error: ${data.error || "Failed to save"}`);
+      if (err) {
+        setError(`Error: ${err.message}`);
         return;
       }
 
