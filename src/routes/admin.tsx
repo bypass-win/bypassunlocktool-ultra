@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULTS } from "@/lib/settings";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -52,6 +53,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [registrations, setRegistrations] = useState<any[]>([]);
   const [saved, setSaved] = useState("");
 
   useEffect(() => {
@@ -69,14 +71,23 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
       if (err) {
         setError(`Error: ${err.message}`);
-        return;
+      } else {
+        const m: Record<string, string> = { ...DEFAULTS };
+        (data ?? []).forEach((r: any) => { m[r.key] = r.value; });
+        setSettings(m);
       }
 
-      const m: Record<string, string> = {};
-      (data ?? []).forEach((r: any) => { m[r.key] = r.value; });
-      setSettings(m);
+      const { data: orderData, error: orderErr } = await supabase
+        .from("registrations")
+        .select("id,created_at,email,serial,model_name,unlock_type,amount,status,payment_method,notes")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (orderErr) setError(`Orders error: ${orderErr.message}`);
+      else setRegistrations(orderData ?? []);
     } catch (e: any) {
       setError(`Error: ${e.message}`);
+      setSettings({ ...DEFAULTS });
     } finally {
       setLoading(false);
     }
