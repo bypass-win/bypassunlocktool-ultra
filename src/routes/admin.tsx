@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { DEFAULTS } from "@/lib/settings";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -52,6 +53,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [settings, setSettings] = useState<Record<string, string>>({});
+  const [registrations, setRegistrations] = useState<any[]>([]);
   const [saved, setSaved] = useState("");
 
   useEffect(() => {
@@ -69,14 +71,23 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
       if (err) {
         setError(`Error: ${err.message}`);
-        return;
+      } else {
+        const m: Record<string, string> = { ...DEFAULTS };
+        (data ?? []).forEach((r: any) => { m[r.key] = r.value; });
+        setSettings(m);
       }
 
-      const m: Record<string, string> = {};
-      (data ?? []).forEach((r: any) => { m[r.key] = r.value; });
-      setSettings(m);
+      const { data: orderData, error: orderErr } = await supabase
+        .from("registrations")
+        .select("id,created_at,email,serial,model_name,unlock_type,amount,status,payment_method,notes")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (orderErr) setError(`Orders error: ${orderErr.message}`);
+      else setRegistrations(orderData ?? []);
     } catch (e: any) {
       setError(`Error: ${e.message}`);
+      setSettings({ ...DEFAULTS });
     } finally {
       setLoading(false);
     }
@@ -124,6 +135,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
       {error && <div className="mb-4 p-3 bg-destructive/10 text-destructive rounded-md text-sm">{error}</div>}
 
+      <h2 className="text-xl font-semibold mb-3">Site settings</h2>
       <div className="space-y-4 max-w-2xl">
         {Object.entries(settings).length === 0 ? (
           <div className="p-4 bg-card rounded-md text-sm text-muted-foreground">No settings available.</div>
@@ -155,6 +167,42 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           ))
         )}
       </div>
+
+      <section className="mt-10">
+        <h2 className="text-xl font-semibold mb-3">Orders</h2>
+        {registrations.length === 0 ? (
+          <div className="p-4 bg-card rounded-md text-sm text-muted-foreground">No orders available.</div>
+        ) : (
+          <div className="overflow-x-auto border border-border rounded-md">
+            <table className="w-full text-sm">
+              <thead className="bg-muted text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2 text-left">Date</th>
+                  <th className="px-3 py-2 text-left">Email</th>
+                  <th className="px-3 py-2 text-left">Serial</th>
+                  <th className="px-3 py-2 text-left">Model</th>
+                  <th className="px-3 py-2 text-left">Type</th>
+                  <th className="px-3 py-2 text-left">Amount</th>
+                  <th className="px-3 py-2 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {registrations.map((order) => (
+                  <tr key={order.id} className="border-t border-border">
+                    <td className="px-3 py-2 whitespace-nowrap">{new Date(order.created_at).toLocaleString()}</td>
+                    <td className="px-3 py-2">{order.email}</td>
+                    <td className="px-3 py-2 font-mono">{order.serial}</td>
+                    <td className="px-3 py-2">{order.model_name}</td>
+                    <td className="px-3 py-2">{order.unlock_type}</td>
+                    <td className="px-3 py-2">${order.amount}</td>
+                    <td className="px-3 py-2">{order.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </main>
   );
 }
