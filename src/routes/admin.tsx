@@ -65,15 +65,15 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       setLoading(true);
       setError(null);
 
-      const { data, error: err } = await supabase
-        .from("site_settings")
-        .select("key,value");
+      const response = await fetch("/api/admin/settings");
+      const data = await response.json();
 
-      if (err) {
-        setError(`Error: ${err.message}`);
+      if (!response.ok) {
+        setError(`Error: ${data.error}`);
+        setSettings({ ...DEFAULTS });
       } else {
         const m: Record<string, string> = { ...DEFAULTS };
-        (data ?? []).forEach((r: any) => { m[r.key] = r.value; });
+        Object.assign(m, data);
         setSettings(m);
       }
 
@@ -95,12 +95,16 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
   const saveSetting = async (key: string, value: string) => {
     try {
-      const { error: err } = await supabase
-        .from("site_settings")
-        .upsert({ key, value }, { onConflict: "key" });
+      const response = await fetch("/api/admin/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value }),
+      });
 
-      if (err) {
-        setError(`Error: ${err.message}`);
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(`Error: ${result.error}`);
         return;
       }
 
