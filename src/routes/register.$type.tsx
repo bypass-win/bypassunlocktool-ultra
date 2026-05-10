@@ -163,25 +163,30 @@ function RegisterPage() {
           unlockType: isPasscode ? "passcode" : "icloud",
         },
       });
-      setCryptoInvoice({
+      const invoice = {
         registrationId: r.registrationId,
         payAddress: r.payAddress,
         payAmount: r.payAmount,
         payCurrency: r.payCurrency,
         network: r.network,
-      });
-      setSecondsLeft(600);
-      tickRef.current = window.setInterval(() => {
-        setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
-      }, 1000);
-      pollRef.current = window.setInterval(async () => {
-        const s = await getCryptoPaymentStatus({ data: { registrationId: r.registrationId } });
-        if (s.status === "completed") {
-          setPaid(true);
-          if (pollRef.current) window.clearInterval(pollRef.current);
-          if (tickRef.current) window.clearInterval(tickRef.current);
-        }
-      }, 8000);
+      };
+      setCryptoInvoice(invoice);
+      const expiresAt = Date.now() + TTL_SECONDS * 1000;
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            invoice,
+            expiresAt,
+            serial: serial.trim(),
+            email: email.trim(),
+            modelId: model.id,
+            payCurrency,
+          })
+        );
+      } catch {}
+      startTicking(expiresAt);
+      startPolling(r.registrationId);
     } catch (e: any) {
       setError(e.message || "Could not start crypto payment");
     } finally {
