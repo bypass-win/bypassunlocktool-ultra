@@ -3,8 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type Settings = Record<string, string>;
 
-const DEFAULTS: Settings = {
+export const DEFAULTS: Settings = {
   download_url_windows: "https://mega.nz/folder/a1hVwDxL#xsXIa7miRPDHdEIdxuyQ1w",
+  app_update_url: "https://mega.nz/folder/a1hVwDxL#xsXIa7miRPDHdEIdxuyQ1w",
+  app_version: "1.0.1",
+  app_min_version: "1.0.0",
+  app_update_notes: "New version available. Download to update BypassUnlock.",
   payments_enabled: "true",
   telegram_url: "https://t.me/BYPASS_UNLOCK_TOOL",
   contact_email: "BypassUnlocktool@outlook.com",
