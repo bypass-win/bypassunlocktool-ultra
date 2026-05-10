@@ -375,6 +375,16 @@ function RegisterPage() {
                     </>
                   ) : (
                     <div className="space-y-3">
+                      <div className="rounded-md border border-warning/40 bg-warning/5 p-3 text-xs space-y-1">
+                        <p className="font-semibold text-warning">⚠ Important — please read before paying</p>
+                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                          <li>This payment address expires in <span className="text-foreground font-semibold">15 minutes</span>. Complete the full payment before the timer runs out.</li>
+                          <li>You must send the <span className="text-foreground">exact amount</span> shown below in one transaction.</li>
+                          <li>After paying from your wallet, return to this page — your registration will be activated <span className="text-foreground">automatically</span> once the payment is confirmed on-chain.</li>
+                          <li>You can safely refresh this page; the address and timer will stay the same for the full 15 minutes.</li>
+                          <li>For any issue with your payment, contact: <a className="text-primary underline" href="mailto:Bypassunlockpay@outlook.com">Bypassunlockpay@outlook.com</a></li>
+                        </ul>
+                      </div>
                       <div className="rounded-md border border-border p-3">
                         <p className="text-xs text-muted-foreground">Send exactly</p>
                         <p className="text-xl font-bold font-mono">
