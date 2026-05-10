@@ -39,24 +39,22 @@ export const Route = createFileRoute("/api/admin/settings")({
           const body = await request.json();
           const { key, value } = body;
 
-          // Use raw SQL to avoid upsert conflicts
+          if (!key || !value) {
+            return new Response(
+              JSON.stringify({ error: "Missing key or value" }),
+              { status: 400, headers: { "Content-Type": "application/json" } }
+            );
+          }
+
           const { error } = await supabaseAdmin
-            .rpc('upsert_setting', { p_key: key, p_value: value });
+            .from("site_settings")
+            .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
 
           if (error) {
-            // Fallback: try direct upsert if RPC doesn't exist
-            const { error: upsertError } = await supabaseAdmin
-              .from("site_settings")
-              .upsert({ key, value, updated_at: new Date().toISOString() }, { 
-                onConflict: "key" 
-              });
-
-            if (upsertError) {
-              return new Response(
-                JSON.stringify({ error: upsertError.message }),
-                { status: 500, headers: { "Content-Type": "application/json" } }
-              );
-            }
+            return new Response(
+              JSON.stringify({ error: error.message }),
+              { status: 500, headers: { "Content-Type": "application/json" } }
+            );
           }
 
           return new Response(
