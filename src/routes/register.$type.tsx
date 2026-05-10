@@ -49,13 +49,67 @@ function RegisterPage() {
     payCurrency: string;
     network: string;
   }>(null);
-  const [secondsLeft, setSecondsLeft] = useState(600);
+  const TTL_SECONDS = 900; // 15 minutes
+  const STORAGE_KEY = `crypto_invoice_${type}`;
+  const [secondsLeft, setSecondsLeft] = useState(TTL_SECONDS);
   const pollRef = useRef<number | null>(null);
   const tickRef = useRef<number | null>(null);
+
+  const startPolling = (registrationId: string) => {
+    if (pollRef.current) window.clearInterval(pollRef.current);
+    pollRef.current = window.setInterval(async () => {
+      try {
+        const s = await getCryptoPaymentStatus({ data: { registrationId } });
+        if (s.status === "completed") {
+          setPaid(true);
+          localStorage.removeItem(STORAGE_KEY);
+          if (pollRef.current) window.clearInterval(pollRef.current);
+          if (tickRef.current) window.clearInterval(tickRef.current);
+        }
+      } catch {}
+    }, 8000);
+  };
+
+  const startTicking = (expiresAt: number) => {
+    if (tickRef.current) window.clearInterval(tickRef.current);
+    const update = () => {
+      const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      setSecondsLeft(left);
+      if (left <= 0) {
+        if (tickRef.current) window.clearInterval(tickRef.current);
+        if (pollRef.current) window.clearInterval(pollRef.current);
+        localStorage.removeItem(STORAGE_KEY);
+        setCryptoInvoice(null);
+      }
+    };
+    update();
+    tickRef.current = window.setInterval(update, 1000);
+  };
 
   useEffect(() => {
     getPayPalClientId().then((r) => setPaypalClientId(r.clientId));
     getCryptoCurrencies().then((r) => setCryptoList(r.currencies));
+    // Restore persisted crypto invoice (survives page refresh)
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved && saved.expiresAt && saved.expiresAt > Date.now()) {
+          setCryptoInvoice(saved.invoice);
+          if (saved.serial) setSerial(saved.serial);
+          if (saved.email) setEmail(saved.email);
+          if (saved.modelId) setModelId(saved.modelId);
+          if (saved.payCurrency) setPayCurrency(saved.payCurrency);
+          setSerialConfirmed(true);
+          setMethod("crypto");
+          setStep("pay");
+          startTicking(saved.expiresAt);
+          startPolling(saved.invoice.registrationId);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -109,25 +163,30 @@ function RegisterPage() {
           unlockType: isPasscode ? "passcode" : "icloud",
         },
       });
-      setCryptoInvoice({
+      const invoice = {
         registrationId: r.registrationId,
         payAddress: r.payAddress,
         payAmount: r.payAmount,
         payCurrency: r.payCurrency,
         network: r.network,
-      });
-      setSecondsLeft(600);
-      tickRef.current = window.setInterval(() => {
-        setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
-      }, 1000);
-      pollRef.current = window.setInterval(async () => {
-        const s = await getCryptoPaymentStatus({ data: { registrationId: r.registrationId } });
-        if (s.status === "completed") {
-          setPaid(true);
-          if (pollRef.current) window.clearInterval(pollRef.current);
-          if (tickRef.current) window.clearInterval(tickRef.current);
-        }
-      }, 8000);
+      };
+      setCryptoInvoice(invoice);
+      const expiresAt = Date.now() + TTL_SECONDS * 1000;
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify({
+            invoice,
+            expiresAt,
+            serial: serial.trim(),
+            email: email.trim(),
+            modelId: model.id,
+            payCurrency,
+          })
+        );
+      } catch {}
+      startTicking(expiresAt);
+      startPolling(r.registrationId);
     } catch (e: any) {
       setError(e.message || "Could not start crypto payment");
     } finally {
@@ -316,6 +375,16 @@ function RegisterPage() {
                     </>
                   ) : (
                     <div className="space-y-3">
+                      <div className="rounded-md border border-warning/40 bg-warning/5 p-3 text-xs space-y-1">
+                        <p className="font-semibold text-warning">⚠ Important — please read before paying</p>
+                        <ul className="list-disc list-inside text-muted-foreground space-y-1">
+                          <li>This payment address expires in <span className="text-foreground font-semibold">15 minutes</span>. Complete the full payment before the timer runs out.</li>
+                          <li>You must send the <span className="text-foreground">exact amount</span> shown below in one transaction.</li>
+                          <li>After paying from your wallet, return to this page — your registration will be activated <span className="text-foreground">automatically</span> once the payment is confirmed on-chain.</li>
+                          <li>You can safely refresh this page; the address and timer will stay the same for the full 15 minutes.</li>
+                          <li>For any issue with your payment, contact: <a className="text-primary underline" href="mailto:Bypassunlockpay@outlook.com">Bypassunlockpay@outlook.com</a></li>
+                        </ul>
+                      </div>
                       <div className="rounded-md border border-border p-3">
                         <p className="text-xs text-muted-foreground">Send exactly</p>
                         <p className="text-xl font-bold font-mono">
