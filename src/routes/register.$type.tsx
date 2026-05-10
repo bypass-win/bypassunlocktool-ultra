@@ -49,13 +49,67 @@ function RegisterPage() {
     payCurrency: string;
     network: string;
   }>(null);
-  const [secondsLeft, setSecondsLeft] = useState(600);
+  const TTL_SECONDS = 900; // 15 minutes
+  const STORAGE_KEY = `crypto_invoice_${type}`;
+  const [secondsLeft, setSecondsLeft] = useState(TTL_SECONDS);
   const pollRef = useRef<number | null>(null);
   const tickRef = useRef<number | null>(null);
+
+  const startPolling = (registrationId: string) => {
+    if (pollRef.current) window.clearInterval(pollRef.current);
+    pollRef.current = window.setInterval(async () => {
+      try {
+        const s = await getCryptoPaymentStatus({ data: { registrationId } });
+        if (s.status === "completed") {
+          setPaid(true);
+          localStorage.removeItem(STORAGE_KEY);
+          if (pollRef.current) window.clearInterval(pollRef.current);
+          if (tickRef.current) window.clearInterval(tickRef.current);
+        }
+      } catch {}
+    }, 8000);
+  };
+
+  const startTicking = (expiresAt: number) => {
+    if (tickRef.current) window.clearInterval(tickRef.current);
+    const update = () => {
+      const left = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+      setSecondsLeft(left);
+      if (left <= 0) {
+        if (tickRef.current) window.clearInterval(tickRef.current);
+        if (pollRef.current) window.clearInterval(pollRef.current);
+        localStorage.removeItem(STORAGE_KEY);
+        setCryptoInvoice(null);
+      }
+    };
+    update();
+    tickRef.current = window.setInterval(update, 1000);
+  };
 
   useEffect(() => {
     getPayPalClientId().then((r) => setPaypalClientId(r.clientId));
     getCryptoCurrencies().then((r) => setCryptoList(r.currencies));
+    // Restore persisted crypto invoice (survives page refresh)
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved && saved.expiresAt && saved.expiresAt > Date.now()) {
+          setCryptoInvoice(saved.invoice);
+          if (saved.serial) setSerial(saved.serial);
+          if (saved.email) setEmail(saved.email);
+          if (saved.modelId) setModelId(saved.modelId);
+          if (saved.payCurrency) setPayCurrency(saved.payCurrency);
+          setSerialConfirmed(true);
+          setMethod("crypto");
+          setStep("pay");
+          startTicking(saved.expiresAt);
+          startPolling(saved.invoice.registrationId);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
