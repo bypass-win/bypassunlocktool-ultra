@@ -358,7 +358,7 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
 
 function OrdersTable({ rows, onChanged, onError }: { rows: any[]; onChanged: () => void; onError: (e: string) => void }) {
   const setStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("registrations").update({ status }).eq("id", id);
+    const { error } = await supabase.from("registrations").update({ status: status as any }).eq("id", id);
     if (error) { onError(error.message); return; }
     onChanged();
   };
