@@ -12,7 +12,7 @@ const ADMIN_USER = "Eyoba@42";
 const ADMIN_PASS = "Eyoba@2772";
 const SESSION_KEY = "bu_admin_ok";
 
-const STATUSES = ["processing", "paid", "completed", "failed", "refunded", "cancelled"];
+const STATUSES = ["pending", "processing", "completed", "failed"];
 
 const SECTIONS: Record<string, string[]> = {
   "Windows app": ["app_version", "app_min_version", "app_update_url", "download_url_windows", "app_update_notes"],
