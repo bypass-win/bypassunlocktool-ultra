@@ -156,6 +156,7 @@ function RootComponent() {
       <Outlet />
       <Footer />
       <TelegramPopup />
+      <CustomAdScripts />
     </>
   );
 }
