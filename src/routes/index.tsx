@@ -56,6 +56,9 @@ function Home() {
         </div>
       </section>
 
+      {/* Mac download (only visible on macOS) */}
+      <MacDownloadButton />
+
       {/* Tools intro */}
       <section id="tools" className="max-w-6xl mx-auto px-6 py-14">
         <div className="text-center max-w-3xl mx-auto">
