@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import appCss from "../styles.css?url";
 import logo from "@/assets/logo.jpg";
 import { TelegramPopup } from "@/components/TelegramPopup";
+import { CustomAdScripts } from "@/components/SiteExtras";
 import { useSettings } from "@/lib/settings";
 
 function NotFoundComponent() {
