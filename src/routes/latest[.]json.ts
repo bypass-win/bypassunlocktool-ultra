@@ -45,6 +45,11 @@ export const Route = createFileRoute("/latest.json")({
               "app_min_version",
               "app_update_notes",
               "download_url_windows",
+              "mac_app_version",
+              "mac_app_update_url",
+              "mac_app_min_version",
+              "mac_app_update_notes",
+              "download_url_mac",
             ]);
 
           const m: Record<string, string> = {};
@@ -55,6 +60,12 @@ export const Route = createFileRoute("/latest.json")({
             url: m.app_update_url || m.download_url_windows || defaults.url,
             notes: m.app_update_notes || defaults.notes,
             minVersion: m.app_min_version || defaults.minVersion,
+            darwin: {
+              version: m.mac_app_version || defaults.version,
+              url: m.mac_app_update_url || m.download_url_mac || defaults.url,
+              notes: m.mac_app_update_notes || "macOS update available.",
+              minVersion: m.mac_app_min_version || defaults.minVersion,
+            },
           };
 
           return new Response(JSON.stringify(body, null, 2), {

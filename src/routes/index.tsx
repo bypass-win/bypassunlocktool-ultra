@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+
 import heroIpad from "@/assets/hero-ipad.png";
 import heroIphone from "@/assets/iphone-locked.png";
 import activationLock from "@/assets/activation-lock.png";
 import passcodeLock from "@/assets/passcode-lock.png";
+import { MacDownloadButton } from "@/components/SiteExtras";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -53,6 +55,9 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* Mac download (only visible on macOS) */}
+      <MacDownloadButton />
 
       {/* Tools intro */}
       <section id="tools" className="max-w-6xl mx-auto px-6 py-14">
