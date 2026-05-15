@@ -143,7 +143,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 key={key}
                 k={key}
                 value={settings[key] ?? ""}
-                onChange={(v) => setSettings({ ...settings, [key]: v })}
+                onChange={(v: string) => setSettings({ ...settings, [key]: v })}
                 onSave={() => saveSetting(key, settings[key] ?? "")}
                 saved={saved === key}
               />
