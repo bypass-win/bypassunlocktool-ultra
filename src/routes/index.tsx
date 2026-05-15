@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+
 import heroIpad from "@/assets/hero-ipad.png";
 import heroIphone from "@/assets/iphone-locked.png";
 import activationLock from "@/assets/activation-lock.png";
