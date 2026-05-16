@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/status")({
   component: StatusPage,
@@ -18,14 +17,9 @@ function StatusPage() {
     e.preventDefault();
     setLoading(true);
     setResult(null);
-    const { data } = await supabase
-      .from("registrations")
-      .select("serial,status,created_at,model_name")
-      .eq("serial", serial.trim().toUpperCase())
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    setResult(data ? (data as Reg) : "notfound");
+    const r = await fetch(`/api/public/registration-status?serial=${encodeURIComponent(serial.trim().toUpperCase())}`);
+    const data = await r.json();
+    setResult(data.registration ? (data.registration as Reg) : "notfound");
     setLoading(false);
   };
 
