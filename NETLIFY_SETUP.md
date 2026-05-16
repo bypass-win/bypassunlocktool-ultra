@@ -18,15 +18,30 @@ After deployment, go to:
 ```
 SUPABASE_PUBLISHABLE_KEY=your_jwt_token_from_supabase
 VITE_SUPABASE_PUBLISHABLE_KEY=your_jwt_token_from_supabase
-SUPABASE_URL=https://vrpjhlxmyvklscnlfvip.supabase.co
-VITE_SUPABASE_URL=https://vrpjhlxmyvklscnlfvip.supabase.co
+SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_from_supabase
 NOWPAYMENTS_API_KEY=your_api_key_from_nowpayments
+NOWPAYMENTS_IPN_SECRET=your_ipn_secret_from_nowpayments
+SITE_URL=https://bypassunlock.online
+ADMIN_SESSION_SECRET=make_a_long_random_secret_here
 ```
+
+`SUPABASE_URL`, `VITE_SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `VITE_SUPABASE_PUBLISHABLE_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` must all come from the same Supabase project. If your Netlify site uses your own Supabase project, run the database tables/migrations there too.
 
 ### 3. Redeploy
 - Go to **Deployments**
 - Click **Trigger deploy**
 - Wait for ✅ green checkmark
+
+### 3.1 If you use your own Supabase project
+Open your Supabase SQL Editor and run every SQL file in `supabase/migrations/` in filename order. The required tables are:
+- `registrations`
+- `site_settings`
+- `profiles`
+- `user_roles`
+
+If the admin dashboard says orders are empty, your Netlify environment variables are pointing to a different Supabase project than the one receiving registrations.
 
 ### 4. Test
 Visit: `https://your-site.netlify.app/register/icloud`
@@ -48,6 +63,13 @@ Visit: `https://your-site.netlify.app/register/icloud`
 1. Log in to [nowpayments.io](https://nowpayments.io)
 2. Go to **Settings → API Keys**
 3. Copy your **API Key** (not the IPN secret)
+
+### Supabase Service Role Key:
+1. Log in to [supabase.com](https://supabase.com)
+2. Select the same project used by your website
+3. Go to **Settings → API**
+4. Copy the **service_role** key into `SUPABASE_SERVICE_ROLE_KEY`
+5. Keep it secret — never put it in any `VITE_` variable
 
 ---
 

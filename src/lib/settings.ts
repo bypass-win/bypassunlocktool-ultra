@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export type Settings = Record<string, string>;
 
@@ -41,14 +40,11 @@ export function useSettings() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from("site_settings").select("key,value").then(({ data }) => {
-      if (data) {
-        const m: Settings = { ...DEFAULTS };
-        data.forEach((r: any) => { m[r.key] = r.value; });
-        setSettings(m);
-      }
-      setLoading(false);
-    });
+    fetch("/api/public/settings")
+      .then((r) => r.json())
+      .then((data) => setSettings({ ...DEFAULTS, ...data }))
+      .catch(() => setSettings(DEFAULTS))
+      .finally(() => setLoading(false));
   }, []);
 
   return { settings, loading };

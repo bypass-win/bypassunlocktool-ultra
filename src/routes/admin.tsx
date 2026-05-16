@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { DEFAULTS, parseAdScripts, type AdScript } from "@/lib/settings";
 
 export const Route = createFileRoute("/admin")({
@@ -8,8 +7,6 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin Dashboard — Bypass Unlock" }, { name: "robots", content: "noindex" }] }),
 });
 
-const ADMIN_USER = "Eyoba@42";
-const ADMIN_PASS = "Eyoba@2772";
 const SESSION_KEY = "bu_admin_ok";
 
 const STATUSES = ["pending", "processing", "completed", "failed"];
@@ -27,7 +24,10 @@ function AdminPage() {
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1") setAuthed(true);
+    fetch("/api/admin/session")
+      .then((r) => r.json())
+      .then((j) => { if (j.authenticated) { sessionStorage.setItem(SESSION_KEY, "1"); setAuthed(true); } })
+      .catch(() => {});
   }, []);
 
   if (!authed) {
@@ -38,10 +38,18 @@ function AdminPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (u === ADMIN_USER && p === ADMIN_PASS) {
-              sessionStorage.setItem(SESSION_KEY, "1");
-              setAuthed(true);
-            } else setErr("Invalid credentials");
+            fetch("/api/admin/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username: u, password: p }),
+            })
+              .then(async (r) => {
+                const j = await r.json();
+                if (!r.ok) throw new Error(j.error || "Invalid credentials");
+                sessionStorage.setItem(SESSION_KEY, "1");
+                setAuthed(true);
+              })
+              .catch((error) => setErr(error.message));
           }}
           className="space-y-3 border border-border rounded-md p-6"
         >
@@ -54,7 +62,7 @@ function AdminPage() {
     );
   }
 
-  return <Dashboard onLogout={() => { sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />;
+  return <Dashboard onLogout={() => { fetch("/api/admin/session", { method: "DELETE" }); sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />;
 }
 
 async function apiSave(key: string, value: string) {
@@ -65,6 +73,17 @@ async function apiSave(key: string, value: string) {
   });
   const j = await r.json();
   if (!r.ok) throw new Error(j.error || "Save failed");
+}
+
+async function apiRegistrations(method: "GET" | "POST" | "PATCH" | "DELETE", body?: unknown) {
+  const r = await fetch("/api/admin/registrations", {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || "Registration request failed");
+  return j;
 }
 
 function Dashboard({ onLogout }: { onLogout: () => void }) {
@@ -90,14 +109,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         setSettings({ ...DEFAULTS, ...data });
       }
 
-      const { data: orderData, error: orderErr } = await supabase
-        .from("registrations")
-        .select("id,created_at,email,serial,model_name,unlock_type,amount,status,payment_method,notes")
-        .order("created_at", { ascending: false })
-        .limit(200);
-
-      if (orderErr) setError(`Orders: ${orderErr.message}`);
-      else setRegistrations(orderData ?? []);
+      const orderData = await apiRegistrations("GET");
+      setRegistrations(orderData.registrations ?? []);
     } catch (e: any) {
       setError(`Error: ${e.message}`);
     } finally {
@@ -307,7 +320,7 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
     if (form.serial.length < 8) { onError("Serial must be at least 8 characters"); return; }
     setBusy(true);
     try {
-      const { error } = await supabase.from("registrations").insert({
+      await apiRegistrations("POST", {
         email: form.email,
         serial: form.serial,
         model_id: form.model_id || "manual",
@@ -318,7 +331,6 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
         payment_method: form.payment_method,
         notes: form.notes || null,
       });
-      if (error) throw error;
       setOk(true);
       setTimeout(() => setOk(false), 1500);
       setForm({ ...form, email: "", serial: "", notes: "" });
@@ -358,15 +370,21 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
 
 function OrdersTable({ rows, onChanged, onError }: { rows: any[]; onChanged: () => void; onError: (e: string) => void }) {
   const setStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("registrations").update({ status: status as any }).eq("id", id);
-    if (error) { onError(error.message); return; }
-    onChanged();
+    try {
+      await apiRegistrations("PATCH", { id, status });
+      onChanged();
+    } catch (e: any) {
+      onError(e.message);
+    }
   };
   const remove = async (id: string) => {
     if (!confirm("Delete this registration?")) return;
-    const { error } = await supabase.from("registrations").delete().eq("id", id);
-    if (error) { onError(error.message); return; }
-    onChanged();
+    try {
+      await apiRegistrations("DELETE", { id });
+      onChanged();
+    } catch (e: any) {
+      onError(e.message);
+    }
   };
 
   return (

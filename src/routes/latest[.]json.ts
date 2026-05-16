@@ -1,15 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-
-const SUPABASE_URL =
-  process.env.SUPABASE_URL ||
-  process.env.VITE_SUPABASE_URL ||
-  "https://vrpjhlxmyvklscnlfvip.supabase.co";
-
-const SUPABASE_KEY =
-  process.env.SUPABASE_PUBLISHABLE_KEY ||
-  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZycGpobHhteXZrbHNjbmxmdmlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMzYxMTYsImV4cCI6MjA5MzgxMjExNn0.UQ_yMB_iaLmNKNYN1aAesIt5VlWgY_cgRae9n0WfDmU";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const corsHeaders = {
   "Content-Type": "application/json; charset=utf-8",
@@ -32,11 +22,7 @@ export const Route = createFileRoute("/latest.json")({
         };
 
         try {
-          const client = createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: { persistSession: false, autoRefreshToken: false },
-          });
-
-          const { data } = await client
+          const { data } = await supabaseAdmin
             .from("site_settings")
             .select("key,value")
             .in("key", [
