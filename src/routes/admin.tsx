@@ -7,8 +7,6 @@ export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin Dashboard — Bypass Unlock" }, { name: "robots", content: "noindex" }] }),
 });
 
-const ADMIN_USER = "Eyoba@42";
-const ADMIN_PASS = "Eyoba@2772";
 const SESSION_KEY = "bu_admin_ok";
 
 const STATUSES = ["pending", "processing", "completed", "failed"];
@@ -27,6 +25,10 @@ function AdminPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1") setAuthed(true);
+    fetch("/api/admin/session")
+      .then((r) => r.json())
+      .then((j) => { if (j.authenticated) { sessionStorage.setItem(SESSION_KEY, "1"); setAuthed(true); } })
+      .catch(() => {});
   }, []);
 
   if (!authed) {
@@ -37,10 +39,18 @@ function AdminPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (u === ADMIN_USER && p === ADMIN_PASS) {
-              sessionStorage.setItem(SESSION_KEY, "1");
-              setAuthed(true);
-            } else setErr("Invalid credentials");
+            fetch("/api/admin/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username: u, password: p }),
+            })
+              .then(async (r) => {
+                const j = await r.json();
+                if (!r.ok) throw new Error(j.error || "Invalid credentials");
+                sessionStorage.setItem(SESSION_KEY, "1");
+                setAuthed(true);
+              })
+              .catch((error) => setErr(error.message));
           }}
           className="space-y-3 border border-border rounded-md p-6"
         >
@@ -53,7 +63,7 @@ function AdminPage() {
     );
   }
 
-  return <Dashboard onLogout={() => { sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />;
+  return <Dashboard onLogout={() => { fetch("/api/admin/session", { method: "DELETE" }); sessionStorage.removeItem(SESSION_KEY); setAuthed(false); }} />;
 }
 
 async function apiSave(key: string, value: string) {
