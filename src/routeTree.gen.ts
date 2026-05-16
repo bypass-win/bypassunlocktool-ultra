@@ -15,6 +15,7 @@ import { Route as LatestDotjsonRouteImport } from './routes/latest[.]json'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterTypeRouteImport } from './routes/register.$type'
+import { Route as ApiPublicSettingsRouteImport } from './routes/api/public/settings'
 import { Route as ApiPublicRegistrationStatusRouteImport } from './routes/api/public/registration-status'
 import { Route as ApiPublicNowpaymentsWebhookRouteImport } from './routes/api/public/nowpayments-webhook'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
@@ -49,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
 const RegisterTypeRoute = RegisterTypeRouteImport.update({
   id: '/register/$type',
   path: '/register/$type',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSettingsRoute = ApiPublicSettingsRouteImport.update({
+  id: '/api/public/settings',
+  path: '/api/public/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicRegistrationStatusRoute =
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
   '/api/public/registration-status': typeof ApiPublicRegistrationStatusRoute
+  '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -104,6 +111,7 @@ export interface FileRoutesByTo {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
   '/api/public/registration-status': typeof ApiPublicRegistrationStatusRoute
+  '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
   '/api/public/registration-status': typeof ApiPublicRegistrationStatusRoute
+  '/api/public/settings': typeof ApiPublicSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/public/nowpayments-webhook'
     | '/api/public/registration-status'
+    | '/api/public/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/public/nowpayments-webhook'
     | '/api/public/registration-status'
+    | '/api/public/settings'
   id:
     | '__root__'
     | '/'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/api/admin/settings'
     | '/api/public/nowpayments-webhook'
     | '/api/public/registration-status'
+    | '/api/public/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -173,6 +185,7 @@ export interface RootRouteChildren {
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiPublicNowpaymentsWebhookRoute: typeof ApiPublicNowpaymentsWebhookRoute
   ApiPublicRegistrationStatusRoute: typeof ApiPublicRegistrationStatusRoute
+  ApiPublicSettingsRoute: typeof ApiPublicSettingsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       path: '/register/$type'
       fullPath: '/register/$type'
       preLoaderRoute: typeof RegisterTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/settings': {
+      id: '/api/public/settings'
+      path: '/api/public/settings'
+      fullPath: '/api/public/settings'
+      preLoaderRoute: typeof ApiPublicSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/registration-status': {
@@ -269,7 +289,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiPublicNowpaymentsWebhookRoute: ApiPublicNowpaymentsWebhookRoute,
   ApiPublicRegistrationStatusRoute: ApiPublicRegistrationStatusRoute,
+  ApiPublicSettingsRoute: ApiPublicSettingsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
