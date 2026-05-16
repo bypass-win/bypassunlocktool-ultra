@@ -34,6 +34,15 @@ ADMIN_SESSION_SECRET=make_a_long_random_secret_here
 - Click **Trigger deploy**
 - Wait for ✅ green checkmark
 
+### 3.1 If you use your own Supabase project
+Open your Supabase SQL Editor and run every SQL file in `supabase/migrations/` in filename order. The required tables are:
+- `registrations`
+- `site_settings`
+- `profiles`
+- `user_roles`
+
+If the admin dashboard says orders are empty, your Netlify environment variables are pointing to a different Supabase project than the one receiving registrations.
+
 ### 4. Test
 Visit: `https://your-site.netlify.app/register/icloud`
 - Fill the form
