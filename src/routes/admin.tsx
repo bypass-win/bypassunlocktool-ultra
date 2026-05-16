@@ -311,7 +311,7 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
     if (form.serial.length < 8) { onError("Serial must be at least 8 characters"); return; }
     setBusy(true);
     try {
-      const { error } = await supabase.from("registrations").insert({
+      await apiRegistrations("POST", {
         email: form.email,
         serial: form.serial,
         model_id: form.model_id || "manual",
@@ -322,7 +322,6 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
         payment_method: form.payment_method,
         notes: form.notes || null,
       });
-      if (error) throw error;
       setOk(true);
       setTimeout(() => setOk(false), 1500);
       setForm({ ...form, email: "", serial: "", notes: "" });
@@ -362,15 +361,21 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
 
 function OrdersTable({ rows, onChanged, onError }: { rows: any[]; onChanged: () => void; onError: (e: string) => void }) {
   const setStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("registrations").update({ status: status as any }).eq("id", id);
-    if (error) { onError(error.message); return; }
-    onChanged();
+    try {
+      await apiRegistrations("PATCH", { id, status });
+      onChanged();
+    } catch (e: any) {
+      onError(e.message);
+    }
   };
   const remove = async (id: string) => {
     if (!confirm("Delete this registration?")) return;
-    const { error } = await supabase.from("registrations").delete().eq("id", id);
-    if (error) { onError(error.message); return; }
-    onChanged();
+    try {
+      await apiRegistrations("DELETE", { id });
+      onChanged();
+    } catch (e: any) {
+      onError(e.message);
+    }
   };
 
   return (
