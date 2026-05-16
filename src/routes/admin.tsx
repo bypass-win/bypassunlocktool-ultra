@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { DEFAULTS, parseAdScripts, type AdScript } from "@/lib/settings";
 
 export const Route = createFileRoute("/admin")({
@@ -67,6 +66,17 @@ async function apiSave(key: string, value: string) {
   if (!r.ok) throw new Error(j.error || "Save failed");
 }
 
+async function apiRegistrations(method: "GET" | "POST" | "PATCH" | "DELETE", body?: unknown) {
+  const r = await fetch("/api/admin/registrations", {
+    method,
+    headers: body ? { "Content-Type": "application/json" } : undefined,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || "Registration request failed");
+  return j;
+}
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,14 +100,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         setSettings({ ...DEFAULTS, ...data });
       }
 
-      const { data: orderData, error: orderErr } = await supabase
-        .from("registrations")
-        .select("id,created_at,email,serial,model_name,unlock_type,amount,status,payment_method,notes")
-        .order("created_at", { ascending: false })
-        .limit(200);
-
-      if (orderErr) setError(`Orders: ${orderErr.message}`);
-      else setRegistrations(orderData ?? []);
+      const orderData = await apiRegistrations("GET");
+      setRegistrations(orderData.registrations ?? []);
     } catch (e: any) {
       setError(`Error: ${e.message}`);
     } finally {
