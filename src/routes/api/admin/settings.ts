@@ -42,7 +42,7 @@ export const Route = createFileRoute("/api/admin/settings")({
           const body = await request.json();
           const { key, value } = body;
 
-          if (!key || !value) {
+          if (!key || typeof value !== "string") {
             return new Response(
               JSON.stringify({ error: "Missing key or value" }),
               { status: 400, headers: { "Content-Type": "application/json" } }
