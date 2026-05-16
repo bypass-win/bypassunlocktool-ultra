@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { adminUnauthorized, isAdminRequest } from "@/lib/admin-auth.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const Route = createFileRoute("/api/admin/settings")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
+          if (!isAdminRequest(request)) return adminUnauthorized();
           const { data, error } = await supabaseAdmin
             .from("site_settings")
             .select("key,value");
@@ -36,6 +38,7 @@ export const Route = createFileRoute("/api/admin/settings")({
 
       POST: async ({ request }) => {
         try {
+          if (!isAdminRequest(request)) return adminUnauthorized();
           const body = await request.json();
           const { key, value } = body;
 
