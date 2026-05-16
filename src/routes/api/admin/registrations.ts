@@ -32,7 +32,7 @@ function json(body: unknown, status = 200) {
 export const Route = createFileRoute("/api/admin/registrations")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
           if (!isAdminRequest(request)) return adminUnauthorized();
           const { data, error } = await supabaseAdmin
