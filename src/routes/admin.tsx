@@ -24,7 +24,6 @@ function AdminPage() {
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    if (typeof window !== "undefined" && sessionStorage.getItem(SESSION_KEY) === "1") setAuthed(true);
     fetch("/api/admin/session")
       .then((r) => r.json())
       .then((j) => { if (j.authenticated) { sessionStorage.setItem(SESSION_KEY, "1"); setAuthed(true); } })
