@@ -4,7 +4,7 @@ import { clearAdminCookie, createAdminCookie, isAdminRequest, validateAdminLogin
 
 const LoginSchema = z.object({ username: z.string(), password: z.string() });
 
-function json(body: unknown, status = 200, headers?: HeadersInit) {
+function json(body: unknown, status = 200, headers?: Record<string, string>) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { "Content-Type": "application/json", ...(headers ?? {}) },
