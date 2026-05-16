@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { adminUnauthorized, isAdminRequest } from "@/lib/admin-auth.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 const RegistrationSchema = z.object({
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/api/admin/registrations")({
     handlers: {
       GET: async () => {
         try {
+          if (!isAdminRequest(request)) return adminUnauthorized();
           const { data, error } = await supabaseAdmin
             .from("registrations")
             .select("id,created_at,email,serial,model_name,unlock_type,amount,status,payment_method,notes")
@@ -48,6 +50,7 @@ export const Route = createFileRoute("/api/admin/registrations")({
 
       POST: async ({ request }) => {
         try {
+          if (!isAdminRequest(request)) return adminUnauthorized();
           const data = RegistrationSchema.parse(await request.json());
           const { error } = await supabaseAdmin.from("registrations").insert({
             email: data.email.trim(),
@@ -70,6 +73,7 @@ export const Route = createFileRoute("/api/admin/registrations")({
 
       PATCH: async ({ request }) => {
         try {
+          if (!isAdminRequest(request)) return adminUnauthorized();
           const data = StatusSchema.parse(await request.json());
           const { error } = await supabaseAdmin
             .from("registrations")
@@ -85,6 +89,7 @@ export const Route = createFileRoute("/api/admin/registrations")({
 
       DELETE: async ({ request }) => {
         try {
+          if (!isAdminRequest(request)) return adminUnauthorized();
           const data = DeleteSchema.parse(await request.json());
           const { error } = await supabaseAdmin.from("registrations").delete().eq("id", data.id);
 

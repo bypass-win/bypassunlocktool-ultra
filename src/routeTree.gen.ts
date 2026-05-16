@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RegisterTypeRouteImport } from './routes/register.$type'
 import { Route as ApiPublicNowpaymentsWebhookRouteImport } from './routes/api/public/nowpayments-webhook'
 import { Route as ApiAdminSettingsRouteImport } from './routes/api/admin/settings'
+import { Route as ApiAdminSessionRouteImport } from './routes/api/admin/session'
 import { Route as ApiAdminRegistrationsRouteImport } from './routes/api/admin/registrations'
 
 const StatusRoute = StatusRouteImport.update({
@@ -60,6 +61,11 @@ const ApiAdminSettingsRoute = ApiAdminSettingsRouteImport.update({
   path: '/api/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminSessionRoute = ApiAdminSessionRouteImport.update({
+  id: '/api/admin/session',
+  path: '/api/admin/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminRegistrationsRoute = ApiAdminRegistrationsRouteImport.update({
   id: '/api/admin/registrations',
   path: '/api/admin/registrations',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
   '/api/admin/registrations': typeof ApiAdminRegistrationsRoute
+  '/api/admin/session': typeof ApiAdminSessionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
 }
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
   '/api/admin/registrations': typeof ApiAdminRegistrationsRoute
+  '/api/admin/session': typeof ApiAdminSessionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
 }
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/status': typeof StatusRoute
   '/register/$type': typeof RegisterTypeRoute
   '/api/admin/registrations': typeof ApiAdminRegistrationsRoute
+  '/api/admin/session': typeof ApiAdminSessionRoute
   '/api/admin/settings': typeof ApiAdminSettingsRoute
   '/api/public/nowpayments-webhook': typeof ApiPublicNowpaymentsWebhookRoute
 }
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/register/$type'
     | '/api/admin/registrations'
+    | '/api/admin/session'
     | '/api/admin/settings'
     | '/api/public/nowpayments-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/register/$type'
     | '/api/admin/registrations'
+    | '/api/admin/session'
     | '/api/admin/settings'
     | '/api/public/nowpayments-webhook'
   id:
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/register/$type'
     | '/api/admin/registrations'
+    | '/api/admin/session'
     | '/api/admin/settings'
     | '/api/public/nowpayments-webhook'
   fileRoutesById: FileRoutesById
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   StatusRoute: typeof StatusRoute
   RegisterTypeRoute: typeof RegisterTypeRoute
   ApiAdminRegistrationsRoute: typeof ApiAdminRegistrationsRoute
+  ApiAdminSessionRoute: typeof ApiAdminSessionRoute
   ApiAdminSettingsRoute: typeof ApiAdminSettingsRoute
   ApiPublicNowpaymentsWebhookRoute: typeof ApiPublicNowpaymentsWebhookRoute
 }
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/session': {
+      id: '/api/admin/session'
+      path: '/api/admin/session'
+      fullPath: '/api/admin/session'
+      preLoaderRoute: typeof ApiAdminSessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/registrations': {
       id: '/api/admin/registrations'
       path: '/api/admin/registrations'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   StatusRoute: StatusRoute,
   RegisterTypeRoute: RegisterTypeRoute,
   ApiAdminRegistrationsRoute: ApiAdminRegistrationsRoute,
+  ApiAdminSessionRoute: ApiAdminSessionRoute,
   ApiAdminSettingsRoute: ApiAdminSettingsRoute,
   ApiPublicNowpaymentsWebhookRoute: ApiPublicNowpaymentsWebhookRoute,
 }
