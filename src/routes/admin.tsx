@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { DEFAULTS, parseAdScripts, type AdScript } from "@/lib/settings";
+import { DEFAULTS, parseAdScripts, parseYoutubeVideos, parseCustomModels, type AdScript, type YoutubeVideo, type CustomModel } from "@/lib/settings";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -14,7 +14,7 @@ const STATUSES = ["pending", "processing", "completed", "failed"];
 const SECTIONS: Record<string, string[]> = {
   "Windows app": ["app_version", "app_min_version", "app_update_url", "download_url_windows", "app_update_notes"],
   "macOS app": ["mac_app_version", "mac_app_min_version", "mac_app_update_url", "download_url_mac", "mac_app_update_notes"],
-  "Site": ["payments_enabled", "telegram_url", "contact_email", "website_url", "tool_version"],
+  "Site": ["payments_enabled", "telegram_url", "contact_email", "website_url", "tool_version", "ota_blocker_url"],
 };
 
 function AdminPage() {
@@ -168,6 +168,18 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       <AdsManager
         value={settings.custom_ad_scripts ?? "[]"}
         onSaved={(v) => { setSettings({ ...settings, custom_ad_scripts: v }); }}
+        onError={setError}
+      />
+
+      <YoutubeManager
+        value={settings.youtube_videos ?? "[]"}
+        onSaved={(v) => { setSettings({ ...settings, youtube_videos: v }); }}
+        onError={setError}
+      />
+
+      <ModelsManager
+        value={settings.custom_models_json ?? "[]"}
+        onSaved={(v) => { setSettings({ ...settings, custom_models_json: v }); }}
         onError={setError}
       />
 
