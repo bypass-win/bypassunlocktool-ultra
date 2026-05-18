@@ -1,4 +1,18 @@
+import { useSettings, parseCustomModels } from "@/lib/settings";
+
 export type DeviceModel = { id: string; name: string; price: number; category: "iphone" | "ipad" };
+
+// Returns built-in MODELS plus any custom models configured in the admin dashboard.
+export function useMergedModels(): DeviceModel[] {
+  const { settings } = useSettings();
+  const custom = parseCustomModels(settings.custom_models_json);
+  if (custom.length === 0) return MODELS;
+  // De-dupe by id — custom overrides built-in
+  const map = new Map<string, DeviceModel>();
+  for (const m of MODELS) map.set(m.id, m);
+  for (const m of custom) map.set(m.id, m);
+  return Array.from(map.values());
+}
 
 export const MODELS: DeviceModel[] = [
   { id: "xr-xsmax", name: "iPhone Xr / Xs / Xs Max", price: 30, category: "iphone" },
