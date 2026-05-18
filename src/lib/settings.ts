@@ -12,6 +12,17 @@ const DEFAULT_AD_SCRIPTS = JSON.stringify([
   },
 ]);
 
+const DEFAULT_YOUTUBE_VIDEOS = JSON.stringify([
+  {
+    id: "yt_default",
+    title: "How to use Bypass Unlock",
+    url: "https://youtu.be/tTPvRPta8Js?si=4d3qe4fDXHI86lkL",
+    enabled: true,
+  },
+]);
+
+const DEFAULT_MODELS = JSON.stringify([]);
+
 export const DEFAULTS: Settings = {
   // Windows
   download_url_windows: "https://mega.nz/folder/a1hVwDxL#xsXIa7miRPDHdEIdxuyQ1w",
@@ -31,8 +42,13 @@ export const DEFAULTS: Settings = {
   contact_email: "BypassUnlocktool@outlook.com",
   website_url: "BypassUnlock.online",
   tool_version: "1.0.0",
+  ota_blocker_url: "https://mega.nz/file/XhxEkZCa#t-c0MLkdqMmNO8z_sE6kr1bkpauv8eqzeram6DEvzWk",
   // Ads (JSON array string)
   custom_ad_scripts: DEFAULT_AD_SCRIPTS,
+  // YouTube videos (JSON array)
+  youtube_videos: DEFAULT_YOUTUBE_VIDEOS,
+  // Custom device models (appended to built-in MODELS) — JSON array
+  custom_models_json: DEFAULT_MODELS,
 };
 
 export function useSettings() {
@@ -64,6 +80,65 @@ export function parseAdScripts(value: string | undefined): AdScript[] {
     const arr = JSON.parse(value);
     if (!Array.isArray(arr)) return [];
     return arr.filter((a) => a && typeof a.html === "string");
+  } catch {
+    return [];
+  }
+}
+
+export type YoutubeVideo = {
+  id: string;
+  title: string;
+  url: string;
+  enabled: boolean;
+};
+
+export function parseYoutubeVideos(value: string | undefined): YoutubeVideo[] {
+  if (!value) return [];
+  try {
+    const arr = JSON.parse(value);
+    if (!Array.isArray(arr)) return [];
+    return arr.filter((v) => v && typeof v.url === "string");
+  } catch {
+    return [];
+  }
+}
+
+// Extract a YouTube video ID from common URL formats:
+// https://youtu.be/<ID>?...
+// https://www.youtube.com/watch?v=<ID>
+// https://www.youtube.com/embed/<ID>
+// https://www.youtube.com/shorts/<ID>
+export function getYoutubeId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.hostname === "youtu.be") return u.pathname.slice(1).split("/")[0] || null;
+    if (u.hostname.endsWith("youtube.com")) {
+      const v = u.searchParams.get("v");
+      if (v) return v;
+      const parts = u.pathname.split("/").filter(Boolean);
+      if (parts[0] === "embed" || parts[0] === "shorts") return parts[1] ?? null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export type CustomModel = { id: string; name: string; price: number; category: "iphone" | "ipad" };
+
+export function parseCustomModels(value: string | undefined): CustomModel[] {
+  if (!value) return [];
+  try {
+    const arr = JSON.parse(value);
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .filter((m) => m && typeof m.id === "string" && typeof m.name === "string" && typeof m.price === "number")
+      .map((m) => ({
+        id: String(m.id),
+        name: String(m.name),
+        price: Number(m.price),
+        category: m.category === "ipad" ? "ipad" : "iphone",
+      }));
   } catch {
     return [];
   }

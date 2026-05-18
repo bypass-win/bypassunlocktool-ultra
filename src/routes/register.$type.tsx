@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { MODELS, type DeviceModel } from "@/lib/pricing";
+import { MODELS, useMergedModels, type DeviceModel } from "@/lib/pricing";
 import { supabase } from "@/integrations/supabase/client";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { createPayPalOrder, capturePayPalOrder, getPayPalClientId } from "@/server/paypal.functions";
@@ -119,7 +119,8 @@ function RegisterPage() {
     };
   }, []);
 
-  const baseModel: DeviceModel | null = MODELS.find((m) => m.id === modelId) ?? null;
+  const mergedModels = useMergedModels();
+  const baseModel: DeviceModel | null = mergedModels.find((m) => m.id === modelId) ?? MODELS.find((m) => m.id === modelId) ?? null;
   const model: DeviceModel | null = baseModel
     ? (isPasscode ? { ...baseModel, price: 40 } : baseModel)
     : null;
@@ -268,7 +269,7 @@ function RegisterPage() {
               className="w-full rounded-md bg-input border border-border px-3 py-2 focus:outline-none focus:ring-1 focus:ring-ring"
             >
               <option value="">— Choose your device —</option>
-              {MODELS.map((m) => (
+              {mergedModels.map((m) => (
                 <option key={m.id} value={m.id}>{m.name}</option>
               ))}
             </select>
