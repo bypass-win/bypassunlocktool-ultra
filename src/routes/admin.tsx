@@ -449,3 +449,151 @@ function OrdersTable({ rows, onChanged, onError }: { rows: any[]; onChanged: () 
     </section>
   );
 }
+
+function YoutubeManager({ value, onSaved, onError }: { value: string; onSaved: (v: string) => void; onError: (e: string) => void }) {
+  const [videos, setVideos] = useState<YoutubeVideo[]>(() => parseYoutubeVideos(value));
+
+  useEffect(() => { setVideos(parseYoutubeVideos(value)); }, [value]);
+
+  const persist = async (next: YoutubeVideo[]) => {
+    const v = JSON.stringify(next);
+    try {
+      await apiSave("youtube_videos", v);
+      setVideos(next);
+      onSaved(v);
+    } catch (e: any) {
+      onError(e.message);
+    }
+  };
+
+  const update = (i: number, patch: Partial<YoutubeVideo>) => {
+    setVideos(videos.map((vd, idx) => (idx === i ? { ...vd, ...patch } : vd)));
+  };
+
+  const add = () => {
+    setVideos([...videos, { id: `yt_${Date.now()}`, title: "New tutorial", url: "", enabled: true }]);
+  };
+
+  const remove = (i: number) => persist(videos.filter((_, idx) => idx !== i));
+
+  return (
+    <section className="mb-8">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-xl font-semibold">YouTube videos</h2>
+        <button onClick={add} className="rounded bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">+ Add video</button>
+      </div>
+      <p className="text-xs text-muted-foreground mb-3">Videos shown on the home page between "Before you register" and the OTA Update Blocker button. Use full YouTube URLs (youtu.be/... or youtube.com/watch?v=...).</p>
+      <div className="space-y-3 max-w-3xl">
+        {videos.length === 0 && <p className="text-sm text-muted-foreground">No videos configured.</p>}
+        {videos.map((vd, i) => (
+          <div key={vd.id} className="border border-border rounded-md p-3 space-y-2">
+            <div className="flex flex-wrap gap-2 items-center">
+              <input
+                value={vd.title}
+                onChange={(e) => update(i, { title: e.target.value })}
+                placeholder="Title"
+                className="flex-1 min-w-[160px] rounded bg-input border border-border px-3 py-1.5 text-sm"
+              />
+              <label className="flex items-center gap-1 text-sm">
+                <input type="checkbox" checked={vd.enabled} onChange={(e) => update(i, { enabled: e.target.checked })} />
+                Enabled
+              </label>
+            </div>
+            <input
+              value={vd.url}
+              onChange={(e) => update(i, { url: e.target.value })}
+              placeholder="https://youtu.be/..."
+              className="w-full rounded bg-input border border-border px-3 py-2 text-xs font-mono"
+            />
+            <div className="flex gap-2">
+              <button onClick={() => persist(videos)} className="rounded bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">Save</button>
+              <button onClick={() => remove(i)} className="rounded bg-destructive px-3 py-1.5 text-sm font-semibold text-destructive-foreground">Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ModelsManager({ value, onSaved, onError }: { value: string; onSaved: (v: string) => void; onError: (e: string) => void }) {
+  const [models, setModels] = useState<CustomModel[]>(() => parseCustomModels(value));
+
+  useEffect(() => { setModels(parseCustomModels(value)); }, [value]);
+
+  const persist = async (next: CustomModel[]) => {
+    const v = JSON.stringify(next);
+    try {
+      await apiSave("custom_models_json", v);
+      setModels(next);
+      onSaved(v);
+    } catch (e: any) {
+      onError(e.message);
+    }
+  };
+
+  const update = (i: number, patch: Partial<CustomModel>) => {
+    setModels(models.map((m, idx) => (idx === i ? { ...m, ...patch } : m)));
+  };
+
+  const add = () => {
+    setModels([
+      ...models,
+      { id: `custom_${Date.now()}`, name: "New model", price: 50, category: "iphone" },
+    ]);
+  };
+
+  const remove = (i: number) => persist(models.filter((_, idx) => idx !== i));
+
+  return (
+    <section className="mb-8">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-xl font-semibold">Pricing & custom models</h2>
+        <button onClick={add} className="rounded bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">+ Add model</button>
+      </div>
+      <p className="text-xs text-muted-foreground mb-3">
+        Add new device models or override the price of a built-in one (use the same id as a built-in model to override its price).
+        Built-in iCloud prices are used unless overridden. Passcode unlocks remain a flat $40 across all models.
+      </p>
+      <div className="space-y-3 max-w-3xl">
+        {models.length === 0 && <p className="text-sm text-muted-foreground">No custom models. Built-in pricing is in use.</p>}
+        {models.map((m, i) => (
+          <div key={m.id} className="border border-border rounded-md p-3 grid grid-cols-1 sm:grid-cols-[140px_1fr_100px_120px_auto] gap-2 items-center">
+            <input
+              value={m.id}
+              onChange={(e) => update(i, { id: e.target.value })}
+              placeholder="Model ID"
+              className="rounded bg-input border border-border px-3 py-1.5 text-sm font-mono"
+            />
+            <input
+              value={m.name}
+              onChange={(e) => update(i, { name: e.target.value })}
+              placeholder="Display name"
+              className="rounded bg-input border border-border px-3 py-1.5 text-sm"
+            />
+            <input
+              type="number"
+              step="1"
+              value={m.price}
+              onChange={(e) => update(i, { price: Number(e.target.value) || 0 })}
+              placeholder="Price USD"
+              className="rounded bg-input border border-border px-3 py-1.5 text-sm"
+            />
+            <select
+              value={m.category}
+              onChange={(e) => update(i, { category: e.target.value === "ipad" ? "ipad" : "iphone" })}
+              className="rounded bg-input border border-border px-2 py-1.5 text-sm"
+            >
+              <option value="iphone">iPhone</option>
+              <option value="ipad">iPad</option>
+            </select>
+            <div className="flex gap-2">
+              <button onClick={() => persist(models)} className="rounded bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">Save</button>
+              <button onClick={() => remove(i)} className="rounded bg-destructive px-3 py-1.5 text-sm font-semibold text-destructive-foreground">Delete</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
