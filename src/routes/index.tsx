@@ -5,6 +5,7 @@ import heroIphone from "@/assets/iphone-locked.png";
 import activationLock from "@/assets/activation-lock.png";
 import passcodeLock from "@/assets/passcode-lock.png";
 import { MacDownloadButton } from "@/components/SiteExtras";
+import { YoutubeVideosSection } from "@/components/YoutubeVideosSection";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -170,6 +171,9 @@ function Home() {
           </ol>
         </div>
       </section>
+
+      {/* Dynamic YouTube tutorials (managed in admin dashboard) */}
+      <YoutubeVideosSection />
 
       {/* OTA Update Blocker CTA */}
       <section className="max-w-4xl mx-auto px-6 pb-20 text-center">

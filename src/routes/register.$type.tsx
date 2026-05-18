@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { MODELS, type DeviceModel } from "@/lib/pricing";
+import { MODELS, useMergedModels, type DeviceModel } from "@/lib/pricing";
 import { supabase } from "@/integrations/supabase/client";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { createPayPalOrder, capturePayPalOrder, getPayPalClientId } from "@/server/paypal.functions";
