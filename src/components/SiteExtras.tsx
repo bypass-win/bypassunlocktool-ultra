@@ -18,17 +18,17 @@ export function MacDownloadButton() {
   if (!isMac) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pb-10 text-center">
+    <div className="max-w-6xl mx-auto px-6 py-6">
       <a
         href={settings.download_url_mac || "#"}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center justify-center rounded-full px-10 py-5 text-lg md:text-xl font-bold text-white shadow-xl hover:opacity-90 transition"
-        style={{ background: "linear-gradient(135deg, oklch(0.55 0.13 200), oklch(0.18 0.05 260))" }}
+        className="inline-flex items-center rounded-md px-5 py-2.5 font-semibold text-white hover:opacity-90"
+        style={{ background: "linear-gradient(135deg, oklch(0.35 0.12 250), oklch(0.18 0.05 260))" }}
       >
         ⬇️ Download for Mac
       </a>
-      <p className="mt-3 text-sm text-muted-foreground">
+      <p className="mt-2 text-xs text-muted-foreground">
         macOS version {settings.mac_app_version} — for Macs running macOS 11+
       </p>
     </div>
