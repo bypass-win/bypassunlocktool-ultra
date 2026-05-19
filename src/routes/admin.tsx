@@ -206,7 +206,7 @@ function SettingRow({ k, value, onChange, onSave, saved }: any) {
       </div>
     );
   }
-  const isLong = k.endsWith("_notes");
+  const isLong = k.endsWith("_notes") || k === "ota_blocker_url";
   return (
     <div className="border border-border rounded-md p-3">
       <label className="block text-sm font-medium mb-2">{k}</label>
@@ -359,7 +359,7 @@ function ManualRegistration({ onAdded, onError }: { onAdded: () => void; onError
       <h2 className="text-xl font-semibold mb-3">Add registration manually</h2>
       <form onSubmit={submit} className="border border-border rounded-md p-4 max-w-3xl grid sm:grid-cols-2 gap-3">
         <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded bg-input border border-border px-3 py-2 text-sm" />
-        <input required placeholder="Serial (min 8 chars)" value={form.serial} onChange={(e) => setForm({ ...form, serial: e.target.value })} className="rounded bg-input border border-border px-3 py-2 text-sm font-mono" />
+        <input required placeholder="Serial (min 8 chars)" value={form.serial} onChange={(e) => setForm({ ...form, serial: e.target.value })} className="rounded bg-input border border-border px-3 py-2 text-sm" />
         <input placeholder="Model ID" value={form.model_id} onChange={(e) => setForm({ ...form, model_id: e.target.value })} className="rounded bg-input border border-border px-3 py-2 text-sm" />
         <input placeholder="Model name" value={form.model_name} onChange={(e) => setForm({ ...form, model_name: e.target.value })} className="rounded bg-input border border-border px-3 py-2 text-sm" />
         <select value={form.unlock_type} onChange={(e) => setForm({ ...form, unlock_type: e.target.value })} className="rounded bg-input border border-border px-3 py-2 text-sm">
