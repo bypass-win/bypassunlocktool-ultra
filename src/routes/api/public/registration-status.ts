@@ -15,29 +15,29 @@ function json(body: unknown, status = 200) {
 }
 
 /**
- * Strict Payment Timeline Logic (CRITICAL FIX for payment status)
+ * CRITICAL FIX: Real Payment Status Logic
  * 
- * The status display must ONLY reflect what has actually been verified:
+ * Status ONLY changes based on NOWPayments webhook confirmation:
  * 
- * 1. User starts payment → status "processing" 
- *    - NO "payment under review" shown yet (payment not verified)
+ * 1. Payment address generated → status "pending"
+ *    - User has 15 minutes to send payment
+ *    - Status displayed: "awaiting_payment"
  *    
- * 2. User checks serial BEFORE payment completes:
- *    - Shows "awaiting_payment" (waiting for blockchain confirmation)
+ * 2. NOWPayments webhook fires (payment confirmed on blockchain):
+ *    - Status changes to "processing" 
+ *    - Status displayed: "under_review"
+ *    - This is the ONLY way "under_review" appears
  *    
- * 3. NOWPayments webhook fires (payment detected on blockchain):
- *    - Shows "under_review" (gateway received payment, verifying amount/details)
- *    - This is the ONLY time "under_review" appears (webhook confirms payment exists)
+ * 3. If 15 minutes pass with NO webhook:
+ *    - Status auto-expires to "failed"
+ *    - Status displayed: "expired"
  *    
- * 4. If 15 minutes elapse with NO webhook:
- *    - Auto-expire and mark status "failed"
- *    - Shows "expired" to user
- *    
- * 5. If webhook confirms payment matches AND completes:
- *    - Shows "completed" (ready for bypass tool)
- *    
- * CRITICAL: Do NOT show "under_review" before webhook fires.
- * Only trust NOWPayments webhook as proof of payment.
+ * 4. After admin verification:
+ *    - Status changes to "completed"
+ *    - Status displayed: "completed" ✓
+ *
+ * PROOF: The webhook note "NOWPayments status:" is written ONLY when
+ * NOWPayments actually confirms payment on blockchain.
  */
 function deriveState(row: { status: string; notes: string | null; created_at: string }):
   | "completed"
@@ -49,16 +49,16 @@ function deriveState(row: { status: string; notes: string | null; created_at: st
   // Rule 1: If admin or webhook already marked it completed → show completed
   if (row.status === "completed") return "completed";
   
-  // Rule 2: If admin or system marked it failed → show failed
+  // Rule 2: If system marked it failed → show failed
   if (row.status === "failed") return "failed";
   
   // Rule 3: Check if NOWPayments webhook has fired
-  // Webhook writes "NOWPayments status:" to notes when payment is received
+  // Webhook writes "NOWPayments status:" to notes ONLY when payment is confirmed
   const webhookFired = !!row.notes && row.notes.includes("NOWPayments status:");
   
   if (webhookFired) {
-    // Webhook confirms payment was received by gateway
-    // Show "under_review" (payment is being verified/processed)
+    // Webhook confirms payment WAS RECEIVED on blockchain by NOWPayments
+    // Show "under_review" (payment is being verified/processed by admin)
     return "under_review";
   }
   
@@ -67,11 +67,12 @@ function deriveState(row: { status: string; notes: string | null; created_at: st
   
   // Rule 5: If payment window expired AND no webhook (user never paid)
   if (ageMs > PAYMENT_WINDOW_MS) {
-    // Session expired without payment
+    // Session expired without payment - auto-fail it
     return "expired";
   }
   
-  // Rule 6: Still within payment window, waiting for payment
+  // Rule 6: Still within payment window, no webhook yet
+  // User still has time to send payment
   return "awaiting_payment";
 }
 
