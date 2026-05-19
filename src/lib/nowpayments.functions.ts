@@ -50,6 +50,8 @@ export const createCryptoPayment = createServerFn({ method: "POST" })
     }
 
     // 1) Create a pending registration row to anchor the order_id
+    // IMPORTANT: Set status to "pending" NOT "processing"
+    // Only change to "processing" when webhook confirms payment
     const { data: reg, error: insErr } = await supabaseAdmin
       .from("registrations")
       .insert({
@@ -60,8 +62,8 @@ export const createCryptoPayment = createServerFn({ method: "POST" })
         unlock_type: data.unlockType,
         amount: data.amount,
         payment_method: `crypto:${data.payCurrency}`,
-        status: "processing",
-        notes: "Awaiting crypto payment",
+        status: "pending",
+        notes: "Payment address generated - awaiting payment on blockchain",
       })
       .select("id")
       .single();
@@ -108,14 +110,16 @@ export const createCryptoPayment = createServerFn({ method: "POST" })
       
       // mark registration failed-ish via notes
       await supabaseAdmin.from("registrations").update({
+        status: "failed",
         notes: `Crypto invoice creation failed: ${errorMsg}`,
       }).eq("id", reg.id);
       
       throw new Error(errorMsg);
     }
 
+    // Store the payment_id from NOWPayments for tracking
     await supabaseAdmin.from("registrations").update({
-      notes: `NOWPayments payment_id: ${json.payment_id}`,
+      notes: `NOWPayments payment_id: ${json.payment_id} | Awaiting blockchain confirmation`,
     }).eq("id", reg.id);
 
     console.log("[NowPayments] Payment created successfully:", json.payment_id);
@@ -139,7 +143,7 @@ export const getCryptoPaymentStatus = createServerFn({ method: "GET" })
       .select("status,notes")
       .eq("id", data.registrationId)
       .maybeSingle();
-    return { status: row?.status ?? "processing" };
+    return { status: row?.status ?? "pending" };
   });
 
 export const createCardInvoice = createServerFn({ method: "POST" })
@@ -173,8 +177,8 @@ export const createCardInvoice = createServerFn({ method: "POST" })
         unlock_type: data.unlockType,
         amount: data.amount,
         payment_method: "card:nowpayments",
-        status: "processing",
-        notes: "Awaiting card payment via NOWPayments",
+        status: "pending",
+        notes: "Card payment invoice generated - awaiting payment",
       })
       .select("id")
       .single();
@@ -207,6 +211,7 @@ export const createCardInvoice = createServerFn({ method: "POST" })
       const errorMsg = json?.message || `Failed with status ${res.status}`;
       console.error("[NowPayments Card] API error:", errorMsg);
       await supabaseAdmin.from("registrations").update({
+        status: "failed",
         notes: `Card invoice creation failed: ${errorMsg}`,
       }).eq("id", reg.id);
       throw new Error(errorMsg);
