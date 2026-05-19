@@ -15,7 +15,7 @@ function json(body: unknown, status = 200) {
 }
 
 /**
- * Strict Payment Timeline Logic (as per requirement)
+ * Strict Payment Timeline Logic (CRITICAL FIX for payment status)
  * 
  * The status display must ONLY reflect what has actually been verified:
  * 
